@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unduh · TikTok Video Downloader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #000814;
+    --bg-card: #030f24;
+    --bg-card-2: #05142e;
+    --line: #12233f;
+    --accent: #90e0ef;
+    --accent-deep: #48cae4;
+    --white: #ffffff;
+    --muted: #7b93ad;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; overflow-x:hidden;}
+  body{
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(144,224,239,0.08), transparent 45%),
+      radial-gradient(circle at 100% 30%, rgba(72,202,228,0.06), transparent 40%);
+  }
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1040px; margin:0 auto; padding:0 28px;}
+
+  /* ---------- NAV ---------- */
+  nav{display:flex; align-items:center; justify-content:space-between; padding:26px 0;}
+  .logo{display:flex; align-items:center; gap:10px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:19px; letter-spacing:-0.02em;}
+  .logo-mark{width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg,var(--accent),var(--accent-deep)); display:flex; align-items:center; justify-content:center;}
+  .logo-mark svg{width:16px; height:16px;}
+  .nav-tag{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); border:1px solid var(--line); padding:5px 10px; border-radius:20px;}
+  .nav-right{display:flex; align-items:center; gap:12px; position:relative;}
+  .menu-btn{width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--bg-card); color:var(--white); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:border-color .15s ease, background .15s ease;}
+  .menu-btn:hover{border-color:var(--accent); background:var(--bg-card-2);}
+  .menu-btn svg{width:19px; height:19px; stroke:var(--white);}
+  .menu-dropdown{position:absolute; top:calc(100% + 10px); right:0; background:var(--bg-card); border:1px solid var(--line); border-radius:14px; padding:8px; min-width:180px; display:none; flex-direction:column; gap:2px; box-shadow:0 20px 50px -18px rgba(0,0,0,0.7); z-index:20;}
+  .menu-dropdown.open{display:flex;}
+  .menu-dropdown a{font-size:13.5px; padding:10px 12px; border-radius:9px; color:var(--white); display:flex; align-items:center; gap:10px;}
+  .menu-dropdown a:hover{background:var(--bg-card-2); color:var(--accent);}
+
+  /* ---------- PLATFORM TABS ---------- */
+  .platform-tabs{display:inline-flex; background:var(--bg-card); border:1px solid var(--line); border-radius:12px; padding:4px; gap:4px; margin:0 auto;}
+  .platform-tab{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13.5px; padding:9px 20px; border-radius:9px; border:none; background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; gap:7px; transition:background .15s ease, color .15s ease;}
+  .platform-tab svg{width:15px; height:15px;}
+  .platform-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent-deep)); color:#001019;}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:64px 0 40px; text-align:center;}
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; color:var(--accent); text-transform:uppercase; display:inline-flex; align-items:center; gap:8px;}
+  .eyebrow::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); display:inline-block;}
+  h1{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(34px,5.4vw,58px); line-height:1.04; letter-spacing:-0.03em; margin:20px 0 16px;}
+  h1 span{color:var(--accent);}
+  .sub{color:var(--muted); font-size:16.5px; max-width:520px; margin:0 auto; line-height:1.55;}
+
+  /* ---------- INPUT FORM ---------- */
+  .fetch-box{max-width:640px; margin:40px auto 0; background:var(--bg-card); border:1px solid var(--line); border-radius:18px; padding:10px; display:flex; gap:8px; box-shadow:0 20px 60px -20px rgba(0,0,0,0.6);}
+  .fetch-box input{flex:1; background:transparent; border:none; outline:none; color:var(--white); font-family:'JetBrains Mono',monospace; font-size:14.5px; padding:14px 16px;}
+  .fetch-box input::placeholder{color:#3d5670;}
+  .btn{background:linear-gradient(135deg,var(--accent),var(--accent-deep)); color:#001019; border:none; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14.5px; padding:0 26px; border-radius:12px; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease; white-space:nowrap;}
+  .btn:hover{transform:translateY(-1px); box-shadow:0 10px 24px -8px rgba(144,224,239,0.45);}
+  .btn:active{transform:translateY(0);}
+  .btn:disabled{opacity:0.55; cursor:not-allowed; transform:none; box-shadow:none;}
+
+  /* waveform signature */
+  .waveform{display:flex; align-items:flex-end; gap:3px; justify-content:center; height:26px; margin:26px auto 0;}
+  .waveform span{width:3px; background:var(--line); border-radius:2px; animation:bounce 1.6s ease-in-out infinite;}
+  @keyframes bounce{0%,100%{height:6px; background:var(--line);} 50%{height:24px; background:var(--accent);}}
+
+  .status{max-width:640px; margin:16px auto 0; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); min-height:18px; text-align:center;}
+  .status.err{color:#ff8fa3;}
+
+  /* ---------- RESULT CARD ---------- */
+  .result{max-width:640px; margin:22px auto 0; background:var(--bg-card); border:1px solid var(--line); border-radius:20px; padding:22px; display:none; gap:18px; grid-template-columns:120px 1fr; }
+  .result.show{display:grid;}
+  .thumb{width:120px; height:150px; border-radius:14px; overflow:hidden; background:var(--bg-card-2); flex-shrink:0;}
+  .thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+  .result-info h3{font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; line-height:1.35; margin-bottom:8px;}
+  .result-info .author{font-size:13px; color:var(--accent); margin-bottom:14px; font-family:'JetBrains Mono',monospace;}
+  .dl-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .dl-btn{font-family:'Inter',sans-serif; font-weight:600; font-size:13px; padding:10px 16px; border-radius:10px; border:1px solid var(--line); background:var(--bg-card-2); color:var(--white); cursor:pointer;}
+  .dl-btn.primary{background:var(--accent); color:#001019; border-color:transparent;}
+  .dl-btn:hover{border-color:var(--accent);}
+
+  /* ---------- STEPS ---------- */
+  .steps{padding:90px 0 40px;}
+  .steps h2{font-family:'Space Grotesk',sans-serif; font-size:28px; text-align:center; margin-bottom:8px; letter-spacing:-0.02em;}
+  .steps p.center{text-align:center; color:var(--muted); font-size:14.5px; margin-bottom:44px;}
+  .step-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .step{background:var(--bg-card); border:1px solid var(--line); border-radius:16px; padding:26px 22px;}
+  .step .num{font-family:'JetBrains Mono',monospace; color:var(--accent); font-size:13px; margin-bottom:14px; display:block;}
+  .step h4{font-family:'Space Grotesk',sans-serif; font-size:16px; margin-bottom:8px;}
+  .step p{color:var(--muted); font-size:13.5px; line-height:1.6;}
+
+  /* ---------- DISCLAIMER ---------- */
+  .disclaimer{max-width:640px; margin:60px auto 0; border:1px dashed var(--line); border-radius:16px; padding:20px 22px; color:var(--muted); font-size:13px; line-height:1.7;}
+  .disclaimer b{color:var(--white);}
+
+  footer{margin-top:80px; border-top:1px solid var(--line); padding:28px 0; text-align:center; color:var(--muted); font-size:12.5px; font-family:'JetBrains Mono',monospace;}
+
+  @media(max-width:640px){
+    .fetch-box{flex-direction:column;}
+    .btn{padding:14px; width:100%;}
+    .result{grid-template-columns:90px 1fr;}
+    .step-grid{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .waveform span{animation:none; height:14px; background:var(--accent);}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="logo">
+      <span class="logo-mark">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#001019" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+      </span>
+      TokSave
+    </div>
+    <div class="nav-right">
+      <span class="nav-tag">tanpa watermark</span>
+      <button class="menu-btn" id="menuBtn" aria-label="Buka menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+      </button>
+      <div class="menu-dropdown" id="menuDropdown">
+        <a href="#top">Beranda</a>
+        <a href="#platform">Pilih Platform</a>
+        <a href="#cara-kerja">Cara Kerja</a>
+        <a href="#disclaimer">Ketentuan</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero" id="top">
+    <span class="eyebrow">tempel · proses · simpan</span>
+    <h1>Unduh video sosial media<br><span>dalam hitungan detik.</span></h1>
+    <p class="sub">Pilih platform, tempel tautan videonya. Kami ambil versi MP4 tanpa watermark dan audio MP3-nya sekaligus.</p>
+
+    <div class="platform-tabs" id="platform">
+      <button class="platform-tab active" data-platform="tiktok">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.4 2.1 1.8 3.6 3.9 3.8v2.7c-1.4 0-2.7-.4-3.9-1.2v6.9c0 3.1-2.5 5.6-5.6 5.6S5.3 18.3 5.3 15.2c0-3 2.3-5.4 5.2-5.6v2.8c-1.4.2-2.4 1.4-2.4 2.8 0 1.6 1.3 2.9 2.9 2.9s2.9-1.3 2.9-2.9V3h2.6z"/></svg>
+        TikTok
+      </button>
+      <button class="platform-tab" data-platform="instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+        Instagram
+      </button>
+    </div>
+
+    <div class="fetch-box">
+      <input id="urlInput" type="text" placeholder="https://www.tiktok.com/@user/video/..." autocomplete="off">
+      <button class="btn" id="fetchBtn">Proses Link</button>
+    </div>
+    <div class="waveform" id="waveform">
+      <span style="animation-delay:0s"></span><span style="animation-delay:.1s"></span><span style="animation-delay:.2s"></span>
+      <span style="animation-delay:.3s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.5s"></span>
+      <span style="animation-delay:.6s"></span><span style="animation-delay:.5s"></span><span style="animation-delay:.4s"></span>
+      <span style="animation-delay:.3s"></span><span style="animation-delay:.2s"></span><span style="animation-delay:.1s"></span>
+    </div>
+    <div class="status" id="statusText"></div>
+
+    <div class="result" id="resultCard">
+      <div class="thumb"><img id="thumbImg" src="" alt="thumbnail video"></div>
+      <div class="result-info">
+        <h3 id="videoTitle">—</h3>
+        <div class="author" id="videoAuthor">@—</div>
+        <div class="dl-row">
+          <button class="dl-btn primary" id="dlVideo">⬇ Video MP4 (No Watermark)</button>
+          <button class="dl-btn" id="dlAudio">♪ Audio MP3</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="steps" id="cara-kerja">
+    <h2>Cara kerjanya</h2>
+    <p class="center">Tiga langkah, tanpa pasang aplikasi</p>
+    <div class="step-grid">
+      <div class="step">
+        <span class="num">01</span>
+        <h4>Salin tautan</h4>
+        <p>Buka TikTok, ketuk tombol Bagikan pada video yang diinginkan, lalu pilih Salin Tautan.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h4>Tempel & proses</h4>
+        <p>Tempel tautan ke kolom di atas dan tekan Proses Link. Sistem akan mengambil detail videonya.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h4>Simpan file</h4>
+        <p>Pilih format MP4 tanpa watermark atau MP3 audio, lalu unduh ke perangkatmu.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="disclaimer" id="disclaimer">
+    <b>Perlu diketahui:</b> Situs ini bergantung pada layanan pihak ketiga untuk mengambil data video, sehingga tidak selalu 100% berhasil untuk semua tautan dan bisa berhenti berfungsi jika layanan tersebut berubah. Untuk Instagram, sebagian besar layanan pengambil data publik mengharuskan API key sendiri — lihat komentar pada kode untuk menghubungkannya. Gunakan hanya untuk mengunduh kontenmu sendiri atau video yang kamu punya izin untuk disimpan — hormati hak cipta dan kreator asli.
+  </div>
+
+  <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi</footer>
+</div>
+
+<script>
+const urlInput = document.getElementById('urlInput');
+const fetchBtn = document.getElementById('fetchBtn');
+const statusText = document.getElementById('statusText');
+const resultCard = document.getElementById('resultCard');
+const thumbImg = document.getElementById('thumbImg');
+const videoTitle = document.getElementById('videoTitle');
+const videoAuthor = document.getElementById('videoAuthor');
+const dlVideo = document.getElementById('dlVideo');
+const dlAudio = document.getElementById('dlAudio');
+const menuBtn = document.getElementById('menuBtn');
+const menuDropdown = document.getElementById('menuDropdown');
+const platformTabs = document.querySelectorAll('.platform-tab');
+
+let currentData = null;
+let currentPlatform = 'tiktok'; // 'tiktok' | 'instagram'
+
+// ---------- MENU DROPDOWN ----------
+menuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  menuDropdown.classList.toggle('open');
+});
+document.addEventListener('click', () => menuDropdown.classList.remove('open'));
+menuDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+// ---------- PLATFORM SWITCH ----------
+platformTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    platformTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentPlatform = tab.dataset.platform;
+    urlInput.value = '';
+    resultCard.classList.remove('show');
+    setStatus('');
+    urlInput.placeholder = currentPlatform === 'tiktok'
+      ? 'https://www.tiktok.com/@user/video/...'
+      : 'https://www.instagram.com/reel/...';
+  });
+});
+
+function setStatus(msg, isErr){
+  statusText.textContent = msg || '';
+  statusText.classList.toggle('err', !!isErr);
+}
+
+async function processLink(){
+  const url = urlInput.value.trim();
+  if(!url){ setStatus(`Tempel tautan ${currentPlatform === 'tiktok' ? 'TikTok' : 'Instagram'} terlebih dahulu.`, true); return; }
+
+  if(currentPlatform === 'tiktok'){
+    if(!/tiktok\.com/i.test(url)){ setStatus('Tautan tidak terlihat seperti URL TikTok.', true); return; }
+    await fetchTikTok(url);
+  }else{
+    if(!/instagram\.com/i.test(url)){ setStatus('Tautan tidak terlihat seperti URL Instagram.', true); return; }
+    await fetchInstagram(url);
+  }
+}
+
+async function fetchTikTok(url){
+  fetchBtn.disabled = true;
+  resultCard.classList.remove('show');
+  setStatus('Mengambil data video…');
+
+  try{
+    // Layanan publik pihak ketiga untuk resolve link TikTok (tanpa watermark)
+    const res = await fetch('https://www.tikwm.com/api/?url=' + encodeURIComponent(url));
+    if(!res.ok) throw new Error('network');
+    const json = await res.json();
+
+    if(json.code !== 0 || !json.data) throw new Error('not_found');
+
+    currentData = json.data;
+    thumbImg.src = currentData.cover || currentData.origin_cover || '';
+    videoTitle.textContent = currentData.title ? currentData.title.slice(0,90) : 'Video TikTok';
+    videoAuthor.textContent = '@' + (currentData.author?.unique_id || 'unknown');
+    dlVideo.textContent = '⬇ Video MP4 (No Watermark)';
+    dlAudio.style.display = '';
+
+    resultCard.classList.add('show');
+    setStatus('Berhasil! Pilih format unduhan di bawah.');
+  }catch(err){
+    setStatus('Gagal mengambil video. Layanan pihak ketiga mungkin sedang tidak tersedia atau tautan tidak valid — coba lagi beberapa saat.', true);
+  }finally{
+    fetchBtn.disabled = false;
+  }
+}
+
+async function fetchInstagram(url){
+  // Instagram tidak punya endpoint publik gratis sestabil TikTok.
+  // Isi INSTAGRAM_API_ENDPOINT dan INSTAGRAM_API_KEY dengan layanan pilihanmu
+  // (mis. SocialKit, RapidAPI, atau backend buatan sendiri) agar tombol ini aktif.
+  const INSTAGRAM_API_ENDPOINT = ''; // contoh: 'https://api.socialkit.dev/instagram/download'
+  const INSTAGRAM_API_KEY = '';
+
+  if(!INSTAGRAM_API_ENDPOINT || !INSTAGRAM_API_KEY){
+    setStatus('Fitur Instagram butuh API key pihak ketiga yang belum dipasang. Buka kode sumber, isi INSTAGRAM_API_ENDPOINT & INSTAGRAM_API_KEY di dalam fungsi fetchInstagram() untuk mengaktifkannya.', true);
+    return;
+  }
+
+  fetchBtn.disabled = true;
+  resultCard.classList.remove('show');
+  setStatus('Mengambil data video…');
+
+  try{
+    const res = await fetch(INSTAGRAM_API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_key: INSTAGRAM_API_KEY, url, format: 'mp4' })
+    });
+    if(!res.ok) throw new Error('network');
+    const json = await res.json();
+    if(!json.success || !json.data) throw new Error('not_found');
+
+    currentData = { play: json.data.downloadUrl, cover: json.data.thumbnail, title: json.data.title };
+    thumbImg.src = currentData.cover || '';
+    videoTitle.textContent = currentData.title ? currentData.title.slice(0,90) : 'Video Instagram';
+    videoAuthor.textContent = 'Instagram';
+    dlVideo.textContent = '⬇ Video MP4';
+    dlAudio.style.display = 'none';
+
+    resultCard.classList.add('show');
+    setStatus('Berhasil! Pilih format unduhan di bawah.');
+  }catch(err){
+    setStatus('Gagal mengambil video Instagram. Cek kembali tautan atau API key yang dipasang.', true);
+  }finally{
+    fetchBtn.disabled = false;
+  }
+}
+
+fetchBtn.addEventListener('click', processLink);
+urlInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') processLink(); });
+
+dlVideo.addEventListener('click', () => {
+  if(!currentData) return;
+  const link = currentData.hdplay || currentData.play;
+  if(link) window.open(link, '_blank');
+});
+
+dlAudio.addEventListener('click', () => {
+  if(!currentData) return;
+  if(currentData.music) window.open(currentData.music, '_blank');
+});
+</script>
+
+</body>
+</html>
