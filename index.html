@@ -120,7 +120,7 @@
       <span class="logo-mark">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#001019" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
       </span>
-      TokSave
+      DOWNLOAD
     </div>
     <div class="nav-right">
       <span class="nav-tag">tanpa watermark</span>
@@ -200,7 +200,7 @@
   </section>
 
   <div class="disclaimer" id="disclaimer">
-    <b>Perlu diketahui:</b> Situs ini bergantung pada layanan pihak ketiga untuk mengambil data video, sehingga tidak selalu 100% berhasil untuk semua tautan dan bisa berhenti berfungsi jika layanan tersebut berubah. Untuk Instagram, sebagian besar layanan pengambil data publik mengharuskan API key sendiri — lihat komentar pada kode untuk menghubungkannya. Gunakan hanya untuk mengunduh kontenmu sendiri atau video yang kamu punya izin untuk disimpan — hormati hak cipta dan kreator asli.
+    <b>Perlu diketahui:</b> Situs ini bergantung pada layanan pihak ketiga untuk mengambil data video, sehingga tidak selalu 100% berhasil untuk semua tautan dan bisa berhenti berfungsi jika layanan tersebut berubah. Untuk Instagram, situs ini memakai demo publik dari proyek open-source insta-reel-api — instance bersama yang bisa lambat, kena limit, atau berhenti sewaktu-waktu di luar kendali kami. Untuk hasil yang lebih stabil, deploy instance sendiri (lihat komentar pada kode). Gunakan hanya untuk mengunduh kontenmu sendiri atau video yang kamu punya izin untuk disimpan — hormati hak cipta dan kreator asli.
   </div>
 
   <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi</footer>
@@ -294,32 +294,24 @@ async function fetchTikTok(url){
 }
 
 async function fetchInstagram(url){
-  // Instagram tidak punya endpoint publik gratis sestabil TikTok.
-  // Isi INSTAGRAM_API_ENDPOINT dan INSTAGRAM_API_KEY dengan layanan pilihanmu
-  // (mis. SocialKit, RapidAPI, atau backend buatan sendiri) agar tombol ini aktif.
-  const INSTAGRAM_API_ENDPOINT = ''; // contoh: 'https://api.socialkit.dev/instagram/download'
-  const INSTAGRAM_API_KEY = '';
-
-  if(!INSTAGRAM_API_ENDPOINT || !INSTAGRAM_API_KEY){
-    setStatus('Fitur Instagram butuh API key pihak ketiga yang belum dipasang. Buka kode sumber, isi INSTAGRAM_API_ENDPOINT & INSTAGRAM_API_KEY di dalam fungsi fetchInstagram() untuk mengaktifkannya.', true);
-    return;
-  }
+  // Endpoint gratis tanpa API key, dari proyek open-source insta-reel-api:
+  // https://github.com/VirtualPirate/insta-reel-api
+  // Pakai demo publik bawaan repo (tanpa perlu deploy sendiri). Ini instance
+  // BERSAMA milik komunitas — bisa lambat, kena limit, atau mati sewaktu-waktu.
+  // Kalau kamu sudah deploy sendiri (Render/Koyeb), ganti URL di bawah ini.
+  const INSTAGRAM_API_ENDPOINT = 'https://instagram-reel-api.onrender.com';
 
   fetchBtn.disabled = true;
   resultCard.classList.remove('show');
   setStatus('Mengambil data video…');
 
   try{
-    const res = await fetch(INSTAGRAM_API_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ access_key: INSTAGRAM_API_KEY, url, format: 'mp4' })
-    });
+    const res = await fetch(INSTAGRAM_API_ENDPOINT + '/?url=' + encodeURIComponent(url));
     if(!res.ok) throw new Error('network');
     const json = await res.json();
-    if(!json.success || !json.data) throw new Error('not_found');
+    if(!json.download_link) throw new Error('not_found');
 
-    currentData = { play: json.data.downloadUrl, cover: json.data.thumbnail, title: json.data.title };
+    currentData = { play: json.download_link, cover: json.thumbnail, title: json.title };
     thumbImg.src = currentData.cover || '';
     videoTitle.textContent = currentData.title ? currentData.title.slice(0,90) : 'Video Instagram';
     videoAuthor.textContent = 'Instagram';
@@ -329,7 +321,7 @@ async function fetchInstagram(url){
     resultCard.classList.add('show');
     setStatus('Berhasil! Pilih format unduhan di bawah.');
   }catch(err){
-    setStatus('Gagal mengambil video Instagram. Cek kembali tautan atau API key yang dipasang.', true);
+    setStatus('Gagal mengambil video Instagram. Server demo publik mungkin sedang "tidur" (coba lagi dalam 30 detik) atau ramai dipakai orang lain. Untuk hasil lebih stabil, deploy instance sendiri via Render/Koyeb dan ganti INSTAGRAM_API_ENDPOINT di kode.', true);
   }finally{
     fetchBtn.disabled = false;
   }
