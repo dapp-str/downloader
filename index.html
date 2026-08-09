@@ -32,6 +32,8 @@
   .logo{display:flex; align-items:center; gap:10px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:19px; letter-spacing:-0.02em;}
   .logo-mark{width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg,var(--accent),var(--accent-deep)); display:flex; align-items:center; justify-content:center;}
   .logo-mark svg{width:16px; height:16px;}
+  .logo-badge{width:19px; height:19px; color:var(--accent); flex-shrink:0; display:inline-flex;}
+  .logo-badge svg{width:100%; height:100%;}
   .nav-tag{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); border:1px solid var(--line); padding:5px 10px; border-radius:20px;}
   .nav-right{display:flex; align-items:center; gap:12px; position:relative;}
   .menu-btn{width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--bg-card); color:var(--white); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:border-color .15s ease, background .15s ease;}
@@ -41,12 +43,6 @@
   .menu-dropdown.open{display:flex;}
   .menu-dropdown a{font-size:13.5px; padding:10px 12px; border-radius:9px; color:var(--white); display:flex; align-items:center; gap:10px;}
   .menu-dropdown a:hover{background:var(--bg-card-2); color:var(--accent);}
-
-  /* ---------- PLATFORM TABS ---------- */
-  .platform-tabs{display:inline-flex; background:var(--bg-card); border:1px solid var(--line); border-radius:12px; padding:4px; gap:4px; margin:0 auto;}
-  .platform-tab{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13.5px; padding:9px 20px; border-radius:9px; border:none; background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; gap:7px; transition:background .15s ease, color .15s ease;}
-  .platform-tab svg{width:15px; height:15px;}
-  .platform-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent-deep)); color:#001019;}
 
   /* ---------- HERO ---------- */
   .hero{padding:64px 0 40px; text-align:center;}
@@ -74,16 +70,37 @@
   .status.err{color:#ff8fa3;}
 
   /* ---------- RESULT CARD ---------- */
-  .result{max-width:640px; margin:22px auto 0; background:var(--bg-card); border:1px solid var(--line); border-radius:20px; padding:22px; display:none; gap:18px; grid-template-columns:120px 1fr; }
-  .result.show{display:grid;}
-  .thumb{width:120px; height:150px; border-radius:14px; overflow:hidden; background:var(--bg-card-2); flex-shrink:0;}
-  .thumb img{width:100%; height:100%; object-fit:cover; display:block;}
-  .result-info h3{font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; line-height:1.35; margin-bottom:8px;}
-  .result-info .author{font-size:13px; color:var(--accent); margin-bottom:14px; font-family:'JetBrains Mono',monospace;}
-  .dl-row{display:flex; gap:10px; flex-wrap:wrap;}
-  .dl-btn{font-family:'Inter',sans-serif; font-weight:600; font-size:13px; padding:10px 16px; border-radius:10px; border:1px solid var(--line); background:var(--bg-card-2); color:var(--white); cursor:pointer;}
+  .result{max-width:640px; margin:22px auto 0; background:var(--bg-card); border:1px solid var(--line); border-radius:20px; padding:18px; display:none; flex-direction:column; gap:16px;}
+  .result.show{display:flex;}
+  .result-video{width:100%; border-radius:14px; overflow:hidden; background:#000; aspect-ratio:9/16; max-height:520px; display:flex; align-items:center; justify-content:center;}
+  .result-video video{width:100%; height:100%; object-fit:contain; display:block;}
+  .result-info h3{font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; line-height:1.4; margin-bottom:6px;}
+  .result-info .author{font-size:13px; color:var(--accent); font-family:'JetBrains Mono',monospace;}
+  .result-info .stats{font-size:12px; color:var(--muted); font-family:'JetBrains Mono',monospace; margin-top:8px;}
+  .dl-col{display:flex; flex-direction:column; gap:10px;}
+  .dl-btn{font-family:'Inter',sans-serif; font-weight:600; font-size:14px; padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:var(--bg-card-2); color:var(--white); cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;}
   .dl-btn.primary{background:var(--accent); color:#001019; border-color:transparent;}
   .dl-btn:hover{border-color:var(--accent);}
+
+  /* ---------- BRAT STICKER ---------- */
+  .brat-box{max-width:640px; margin:40px auto 0; display:none; gap:22px;}
+  .brat-box.show{display:grid; grid-template-columns:1fr 1fr;}
+  .brat-panel{background:var(--bg-card); border:1px solid var(--line); border-radius:18px; padding:20px; display:flex; flex-direction:column; gap:12px;}
+  .brat-panel label{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em;}
+  .brat-panel textarea{resize:none; background:var(--bg-card-2); border:1px solid var(--line); border-radius:10px; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; padding:12px; outline:none; min-height:70px;}
+  .brat-panel textarea:focus{border-color:var(--accent);}
+  .brat-row{display:flex; gap:10px; align-items:center;}
+  .brat-color{display:flex; gap:8px;}
+  .swatch{width:26px; height:26px; border-radius:7px; border:2px solid transparent; cursor:pointer;}
+  .swatch.active{border-color:var(--accent);}
+  .brat-toggle{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); cursor:pointer; user-select:none;}
+  .brat-toggle input{accent-color:var(--accent); width:15px; height:15px; cursor:pointer;}
+  #bratCanvasWrap{display:flex; align-items:center; justify-content:center; background:var(--bg-card); border:1px solid var(--line); border-radius:18px; padding:16px;}
+  #bratCanvas{width:100%; max-width:280px; aspect-ratio:1/1; border-radius:10px; display:block; box-shadow:0 20px 50px -18px rgba(0,0,0,0.6);}
+  .brat-dl-row{display:flex; gap:10px; margin-top:4px;}
+  @media(max-width:640px){
+    .brat-box.show{grid-template-columns:1fr;}
+  }
 
   /* ---------- STEPS ---------- */
   .steps{padding:90px 0 40px;}
@@ -99,12 +116,76 @@
   .disclaimer{max-width:640px; margin:60px auto 0; border:1px dashed var(--line); border-radius:16px; padding:20px 22px; color:var(--muted); font-size:13px; line-height:1.7;}
   .disclaimer b{color:var(--white);}
 
+  /* ---------- SKELETON LOADER ---------- */
+  .skeleton{max-width:640px; margin:22px auto 0; background:var(--bg-card); border:1px solid var(--line); border-radius:20px; padding:18px; display:none; flex-direction:column; gap:16px;}
+  .skeleton.show{display:flex;}
+  .sk-block{position:relative; overflow:hidden; background:var(--bg-card-2); border-radius:14px;}
+  .sk-block::after{
+    content:""; position:absolute; inset:0; transform:translateX(-100%);
+    background:linear-gradient(90deg, transparent, rgba(144,224,239,0.12), transparent);
+    animation:shimmer 1.4s ease-in-out infinite;
+  }
+  @keyframes shimmer{100%{transform:translateX(100%);}}
+  .sk-video{width:100%; aspect-ratio:9/16; max-height:520px; border-radius:14px;}
+  .sk-line{height:14px; border-radius:7px;}
+  .sk-line.w-70{width:70%;}
+  .sk-line.w-40{width:40%; margin-top:8px;}
+  .sk-btn{height:46px; border-radius:12px;}
+  @media(max-width:640px){
+    .sk-video{aspect-ratio:9/16; max-height:420px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .sk-block::after{animation:none;}
+  }
+
+  /* ---------- TOAST NOTIFICATIONS ---------- */
+  .toast-stack{position:fixed; left:50%; bottom:26px; transform:translateX(-50%); display:flex; flex-direction:column; gap:10px; z-index:200; width:100%; max-width:340px; padding:0 16px; align-items:center;}
+  .toast{display:flex; align-items:center; gap:10px; background:var(--bg-card); border:1px solid var(--line); border-radius:13px; padding:12px 16px; font-size:13.5px; color:var(--white); box-shadow:0 16px 40px -14px rgba(0,0,0,0.65); opacity:0; transform:translateY(14px); animation:toast-in .28s ease forwards; width:100%;}
+  .toast.leaving{animation:toast-out .22s ease forwards;}
+  .toast .toast-icon{width:20px; height:20px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:rgba(144,224,239,0.15);}
+  .toast .toast-icon svg{width:12px; height:12px; stroke:var(--accent);}
+  .toast.err .toast-icon{background:rgba(255,143,163,0.15);}
+  .toast.err .toast-icon svg{stroke:#ff8fa3;}
+  @keyframes toast-in{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+  @keyframes toast-out{from{opacity:1; transform:translateY(0);} to{opacity:0; transform:translateY(14px);}}
+
   footer{margin-top:80px; border-top:1px solid var(--line); padding:28px 0; text-align:center; color:var(--muted); font-size:12.5px; font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- SUPPORT / QRIS MODAL ---------- */
+  .modal-overlay{position:fixed; inset:0; background:rgba(0,8,20,0.78); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:100; padding:24px;}
+  .modal-overlay.open{display:flex;}
+  .modal-card{background:var(--bg-card); border:1px solid var(--line); border-radius:22px; padding:26px; max-width:340px; width:100%; text-align:center; position:relative; box-shadow:0 30px 80px -20px rgba(0,0,0,0.7);}
+  .modal-close{position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:9px; border:1px solid var(--line); background:var(--bg-card-2); color:var(--white); cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .modal-close:hover{border-color:var(--accent);}
+  .modal-card h3{font-family:'Space Grotesk',sans-serif; font-size:18px; margin:4px 0 6px;}
+  .modal-card p{color:var(--muted); font-size:13px; line-height:1.6; margin-bottom:18px;}
+  .qris-img-wrap{background:#ffffff; border-radius:16px; padding:14px; margin-bottom:14px;}
+  .qris-img-wrap img{width:100%; border-radius:8px; display:block;}
+  .modal-note{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); line-height:1.6;}
+  .modal-confirm-btn{width:100%; margin-top:14px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13.5px; padding:12px; border-radius:12px; border:1px solid var(--line); background:var(--bg-card-2); color:var(--white); cursor:pointer;}
+  .modal-confirm-btn:hover{border-color:var(--accent); color:var(--accent);}
+
+  .thanks-view{display:none; flex-direction:column; align-items:center; position:relative; padding-top:6px;}
+  .thanks-view.show{display:flex;}
+  .thanks-check{width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-deep)); display:flex; align-items:center; justify-content:center; margin-bottom:16px; animation:pop-in .45s cubic-bezier(.34,1.56,.64,1);}
+  .thanks-check svg{width:30px; height:30px; stroke:#001019;}
+  .thanks-view h3{margin-bottom:8px;}
+  .thanks-view p{color:var(--muted); font-size:13.5px; line-height:1.6; margin-bottom:4px;}
+  @keyframes pop-in{0%{transform:scale(0); opacity:0;} 60%{transform:scale(1.15); opacity:1;} 100%{transform:scale(1);}}
+  .confetti-piece{position:absolute; top:-10px; width:7px; height:12px; opacity:0.9; animation:confetti-fall 1.6s ease-in forwards;}
+  @keyframes confetti-fall{
+    0%{transform:translateY(0) rotate(0deg); opacity:1;}
+    100%{transform:translateY(220px) rotate(540deg); opacity:0;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .thanks-check{animation:none;}
+    .confetti-piece{animation:none; display:none;}
+  }
 
   @media(max-width:640px){
     .fetch-box{flex-direction:column;}
     .btn{padding:14px; width:100%;}
-    .result{grid-template-columns:90px 1fr;}
+    .result-video{aspect-ratio:9/16; max-height:420px;}
     .step-grid{grid-template-columns:1fr;}
   }
   @media (prefers-reduced-motion: reduce){
@@ -121,6 +202,9 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#001019" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
       </span>
       DOWNLOAD
+      <span class="logo-badge" title="Terverifikasi">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-check-icon lucide-badge-check"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+      </span>
     </div>
     <div class="nav-right">
       <span class="nav-tag">tanpa watermark</span>
@@ -128,53 +212,124 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
       </button>
       <div class="menu-dropdown" id="menuDropdown">
-        <a href="#top">Beranda</a>
-        <a href="#platform">Pilih Platform</a>
-        <a href="#cara-kerja">Cara Kerja</a>
-        <a href="#disclaimer">Ketentuan</a>
+        <a href="#top" id="menuTiktokBtn">Beranda</a>
+        <a href="#cara-kerja" id="menuCaraKerjaBtn">Cara Kerja</a>
+        <a href="#" id="menuBratBtn">Brat Stiker</a>
+        <a href="#" id="supportMenuBtn">Dukung Developer</a>
+        <a href="#disclaimer" id="menuDisclaimerBtn">Ketentuan</a>
       </div>
     </div>
   </nav>
 
   <section class="hero" id="top">
     <span class="eyebrow">tempel · proses · simpan</span>
-    <h1>Unduh video sosial media<br><span>dalam hitungan detik.</span></h1>
-    <p class="sub">Pilih platform, tempel tautan videonya. Kami ambil versi MP4 tanpa watermark dan audio MP3-nya sekaligus.</p>
+    <h1>Unduh video TikTok<br><span>dalam hitungan detik.</span></h1>
+    <p class="sub">Tempel tautan videonya. Kami ambil versi MP4 tanpa watermark dan audio MP3-nya sekaligus.</p>
 
-    <div class="platform-tabs" id="platform">
-      <button class="platform-tab active" data-platform="tiktok">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.4 2.1 1.8 3.6 3.9 3.8v2.7c-1.4 0-2.7-.4-3.9-1.2v6.9c0 3.1-2.5 5.6-5.6 5.6S5.3 18.3 5.3 15.2c0-3 2.3-5.4 5.2-5.6v2.8c-1.4.2-2.4 1.4-2.4 2.8 0 1.6 1.3 2.9 2.9 2.9s2.9-1.3 2.9-2.9V3h2.6z"/></svg>
-        TikTok
-      </button>
-      <button class="platform-tab" data-platform="instagram">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
-        Instagram
-      </button>
-    </div>
+    <div id="tiktokView">
+      <div class="fetch-box">
+        <input id="urlInput" type="text" placeholder="https://www.tiktok.com/@user/video/..." autocomplete="off">
+        <button class="btn" id="fetchBtn">Proses Link</button>
+      </div>
+      <div class="waveform" id="waveform">
+        <span style="animation-delay:0s"></span><span style="animation-delay:.1s"></span><span style="animation-delay:.2s"></span>
+        <span style="animation-delay:.3s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.5s"></span>
+        <span style="animation-delay:.6s"></span><span style="animation-delay:.5s"></span><span style="animation-delay:.4s"></span>
+        <span style="animation-delay:.3s"></span><span style="animation-delay:.2s"></span><span style="animation-delay:.1s"></span>
+      </div>
+      <div class="status" id="statusText"></div>
 
-    <div class="fetch-box">
-      <input id="urlInput" type="text" placeholder="https://www.tiktok.com/@user/video/..." autocomplete="off">
-      <button class="btn" id="fetchBtn">Proses Link</button>
-    </div>
-    <div class="waveform" id="waveform">
-      <span style="animation-delay:0s"></span><span style="animation-delay:.1s"></span><span style="animation-delay:.2s"></span>
-      <span style="animation-delay:.3s"></span><span style="animation-delay:.4s"></span><span style="animation-delay:.5s"></span>
-      <span style="animation-delay:.6s"></span><span style="animation-delay:.5s"></span><span style="animation-delay:.4s"></span>
-      <span style="animation-delay:.3s"></span><span style="animation-delay:.2s"></span><span style="animation-delay:.1s"></span>
-    </div>
-    <div class="status" id="statusText"></div>
+      <div class="skeleton" id="skeletonCard">
+        <div class="sk-block sk-video"></div>
+        <div>
+          <div class="sk-block sk-line w-70"></div>
+          <div class="sk-block sk-line w-40"></div>
+        </div>
+        <div class="sk-block sk-btn"></div>
+        <div class="sk-block sk-btn"></div>
+      </div>
 
-    <div class="result" id="resultCard">
-      <div class="thumb"><img id="thumbImg" src="" alt="thumbnail video"></div>
-      <div class="result-info">
-        <h3 id="videoTitle">—</h3>
-        <div class="author" id="videoAuthor">@—</div>
-        <div class="dl-row">
-          <button class="dl-btn primary" id="dlVideo">⬇ Video MP4 (No Watermark)</button>
-          <button class="dl-btn" id="dlAudio">♪ Audio MP3</button>
+      <div class="result" id="resultCard">
+        <div class="result-video">
+          <video id="videoPlayer" controls playsinline preload="metadata"></video>
+        </div>
+        <div class="result-info">
+          <h3 id="videoTitle">—</h3>
+          <div class="author" id="videoAuthor">@—</div>
+          <div class="stats" id="videoStats"></div>
+        </div>
+        <div class="dl-col">
+          <button class="dl-btn primary" id="dlVideo">⬇ Download MP4</button>
+          <button class="dl-btn" id="dlAudio">♪ Download MP3</button>
         </div>
       </div>
     </div>
+  </section>
+
+  <section class="hero" id="brat-section" style="display:none; padding-top:24px;">
+    <a href="#" id="backToTiktok" style="display:inline-flex; align-items:center; gap:6px; color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:13px; margin-bottom:18px;">← Kembali ke Downloader</a>
+    <span class="eyebrow">stiker · brat · gratis</span>
+    <h1 style="font-size:clamp(28px,4.4vw,42px);">Bikin stiker <span>brat</span> sendiri.</h1>
+    <p class="sub">Tulis teks, pilih warna, langsung simpan sebagai PNG.</p>
+
+    <div class="brat-box show" id="bratBox">
+      <div class="brat-panel">
+        <label for="bratText">Teks stiker</label>
+        <textarea id="bratText" maxlength="60" placeholder="tulis teks brat kamu...">brat</textarea>
+
+        <label>Warna latar</label>
+        <div class="brat-row">
+          <div class="brat-color" id="bratColors">
+            <div class="swatch active" data-color="#8ace00" style="background:#8ace00"></div>
+            <div class="swatch" data-color="#000000" style="background:#000000; border-color:#12233f;"></div>
+            <div class="swatch" data-color="#ffffff" style="background:#ffffff; border-color:#12233f;"></div>
+            <div class="swatch" data-color="#ff6ec7" style="background:#ff6ec7"></div>
+            <div class="swatch" data-color="#3d5afe" style="background:#3d5afe"></div>
+          </div>
+        </div>
+
+        <label class="brat-toggle" style="margin-top:2px;">
+          <input type="checkbox" id="bratBlur" checked>
+          efek blur khas brat
+        </label>
+        <label class="brat-toggle">
+          <input type="checkbox" id="bratLower" checked>
+          huruf kecil semua (lowercase)
+        </label>
+
+        <div class="brat-dl-row">
+          <button class="dl-btn primary" id="bratDlPng">⬇ Simpan PNG (512×512)</button>
+        </div>
+        <p style="color:var(--muted); font-size:12px; line-height:1.6; margin-top:2px;">
+          Simpan gambarnya, lalu tambahkan ke WhatsApp lewat aplikasi pembuat stiker (mis. "Sticker Maker") — WhatsApp mewajibkan stiker dibuat lewat app khusus, bukan lewat browser.
+        </p>
+      </div>
+      <div id="bratCanvasWrap">
+        <canvas id="bratCanvas" width="512" height="512"></canvas>
+      </div>
+    </div>
+
+    <section class="steps" style="padding:70px 0 20px;">
+      <h2>Cara kerjanya</h2>
+      <p class="center">Tiga langkah, langsung jadi</p>
+      <div class="step-grid">
+        <div class="step">
+          <span class="num">01</span>
+          <h4>Tulis teks</h4>
+          <p>Ketik kata atau kalimat yang mau dijadikan stiker di kolom teks.</p>
+        </div>
+        <div class="step">
+          <span class="num">02</span>
+          <h4>Atur tampilan</h4>
+          <p>Pilih warna latar, aktifkan efek blur khas brat, dan atur huruf kecil sesuai selera.</p>
+        </div>
+        <div class="step">
+          <span class="num">03</span>
+          <h4>Simpan PNG</h4>
+          <p>Tekan Simpan PNG, lalu tambahkan ke WhatsApp lewat aplikasi pembuat stiker.</p>
+        </div>
+      </div>
+    </section>
   </section>
 
   <section class="steps" id="cara-kerja">
@@ -200,10 +355,42 @@
   </section>
 
   <div class="disclaimer" id="disclaimer">
-    <b>Perlu diketahui:</b> Situs ini bergantung pada layanan pihak ketiga untuk mengambil data video, sehingga tidak selalu 100% berhasil untuk semua tautan dan bisa berhenti berfungsi jika layanan tersebut berubah. Untuk Instagram, situs ini memakai demo publik dari proyek open-source insta-reel-api — instance bersama yang bisa lambat, kena limit, atau berhenti sewaktu-waktu di luar kendali kami. Untuk hasil yang lebih stabil, deploy instance sendiri (lihat komentar pada kode). Gunakan hanya untuk mengunduh kontenmu sendiri atau video yang kamu punya izin untuk disimpan — hormati hak cipta dan kreator asli.
+    <b>Perlu diketahui:</b> Situs ini bergantung pada layanan pihak ketiga untuk mengambil data video, sehingga tidak selalu 100% berhasil untuk semua tautan dan bisa berhenti berfungsi jika layanan tersebut berubah. Gunakan hanya untuk mengunduh kontenmu sendiri atau video yang kamu punya izin untuk disimpan — hormati hak cipta dan kreator asli.
   </div>
 
   <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi</footer>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<div class="modal-overlay" id="supportModal">
+  <div class="modal-card">
+    <button class="modal-close" id="supportModalClose" aria-label="Tutup">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+
+    <div class="qris-view" id="qrisView">
+      <h3>Dukung Developer</h3>
+      <p>Kalau situs ini bermanfaat, boleh banget traktir developer kopi lewat scan QRIS di bawah ini.</p>
+      <div class="qris-img-wrap">
+        <img src="https://i.ibb.co.com/LXVDc8Tr/qr-ID1025444122473-29-06-26-1782730287-1782730287658.jpg" alt="QRIS Dukung Developer" id="qrisImg">
+      </div>
+      <p class="modal-note">Scan pakai aplikasi e-wallet / m-banking apapun yang support QRIS.</p>
+      <button class="modal-confirm-btn" id="qrisConfirmBtn" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check" style="width:16px; height:16px; flex-shrink:0;"><path d="M20 6 9 17l-5-5"/></svg>
+        Saya Sudah Scan / Donasi
+      </button>
+    </div>
+
+    <div class="thanks-view" id="thanksView">
+      <div class="thanks-check">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <h3>Terima kasih!</h3>
+      <p>Dukunganmu berarti banget buat developer.</p>
+      <p>Semoga harimu menyenangkan ✨</p>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -211,17 +398,58 @@ const urlInput = document.getElementById('urlInput');
 const fetchBtn = document.getElementById('fetchBtn');
 const statusText = document.getElementById('statusText');
 const resultCard = document.getElementById('resultCard');
-const thumbImg = document.getElementById('thumbImg');
+const videoPlayer = document.getElementById('videoPlayer');
 const videoTitle = document.getElementById('videoTitle');
 const videoAuthor = document.getElementById('videoAuthor');
+const videoStats = document.getElementById('videoStats');
 const dlVideo = document.getElementById('dlVideo');
 const dlAudio = document.getElementById('dlAudio');
 const menuBtn = document.getElementById('menuBtn');
 const menuDropdown = document.getElementById('menuDropdown');
-const platformTabs = document.querySelectorAll('.platform-tab');
+const tiktokViewSection = document.getElementById('top');
+const bratSection = document.getElementById('brat-section');
+const menuTiktokBtn = document.getElementById('menuTiktokBtn');
+const menuBratBtn = document.getElementById('menuBratBtn');
+const backToTiktok = document.getElementById('backToTiktok');
+const bratBox = document.getElementById('bratBox');
 
 let currentData = null;
-let currentPlatform = 'tiktok'; // 'tiktok' | 'instagram'
+
+// ---------- VIEW SWITCH: TikTok <-> Brat Stiker ----------
+function showTiktokView(){
+  bratSection.style.display = 'none';
+  tiktokViewSection.style.display = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function showBratView(){
+  tiktokViewSection.style.display = 'none';
+  bratSection.style.display = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  drawBrat();
+}
+
+menuTiktokBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  menuDropdown.classList.remove('open');
+  showTiktokView();
+});
+menuBratBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  menuDropdown.classList.remove('open');
+  showBratView();
+});
+backToTiktok.addEventListener('click', (e) => {
+  e.preventDefault();
+  showTiktokView();
+});
+document.getElementById('menuCaraKerjaBtn').addEventListener('click', () => {
+  menuDropdown.classList.remove('open');
+  showTiktokView();
+});
+document.getElementById('menuDisclaimerBtn').addEventListener('click', () => {
+  menuDropdown.classList.remove('open');
+  showTiktokView();
+});
 
 // ---------- MENU DROPDOWN ----------
 menuBtn.addEventListener('click', (e) => {
@@ -231,19 +459,55 @@ menuBtn.addEventListener('click', (e) => {
 document.addEventListener('click', () => menuDropdown.classList.remove('open'));
 menuDropdown.addEventListener('click', (e) => e.stopPropagation());
 
-// ---------- PLATFORM SWITCH ----------
-platformTabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    platformTabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    currentPlatform = tab.dataset.platform;
-    urlInput.value = '';
-    resultCard.classList.remove('show');
-    setStatus('');
-    urlInput.placeholder = currentPlatform === 'tiktok'
-      ? 'https://www.tiktok.com/@user/video/...'
-      : 'https://www.instagram.com/reel/...';
-  });
+// ---------- SUPPORT DEVELOPER (QRIS) MODAL ----------
+const supportMenuBtn = document.getElementById('supportMenuBtn');
+const supportModal = document.getElementById('supportModal');
+const supportModalClose = document.getElementById('supportModalClose');
+const qrisView = document.getElementById('qrisView');
+const thanksView = document.getElementById('thanksView');
+const qrisConfirmBtn = document.getElementById('qrisConfirmBtn');
+
+function resetSupportModal(){
+  qrisView.style.display = '';
+  thanksView.classList.remove('show');
+  const oldConfetti = thanksView.querySelectorAll('.confetti-piece');
+  oldConfetti.forEach(p => p.remove());
+}
+
+function fireConfetti(container){
+  const colors = ['#90e0ef', '#48cae4', '#ffd166', '#ff6ec7', '#8ace00'];
+  for(let i = 0; i < 24; i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = (Math.random() * 100) + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = (Math.random() * 0.3) + 's';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    container.appendChild(piece);
+    setTimeout(() => piece.remove(), 2200);
+  }
+}
+
+supportMenuBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  menuDropdown.classList.remove('open');
+  resetSupportModal();
+  supportModal.classList.add('open');
+});
+
+qrisConfirmBtn.addEventListener('click', () => {
+  qrisView.style.display = 'none';
+  thanksView.classList.add('show');
+  fireConfetti(thanksView);
+  showToast('Terima kasih atas dukunganmu!');
+});
+
+supportModalClose.addEventListener('click', () => supportModal.classList.remove('open'));
+supportModal.addEventListener('click', (e) => {
+  if(e.target === supportModal) supportModal.classList.remove('open');
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape') supportModal.classList.remove('open');
 });
 
 function setStatus(msg, isErr){
@@ -251,77 +515,141 @@ function setStatus(msg, isErr){
   statusText.classList.toggle('err', !!isErr);
 }
 
+// ---------- TOAST NOTIFICATIONS ----------
+const toastStack = document.getElementById('toastStack');
+const toastIconOk = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+const toastIconErr = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+
+function showToast(msg, isErr){
+  const el = document.createElement('div');
+  el.className = 'toast' + (isErr ? ' err' : '');
+  el.innerHTML = `<span class="toast-icon">${isErr ? toastIconErr : toastIconOk}</span><span>${msg}</span>`;
+  toastStack.appendChild(el);
+
+  setTimeout(() => {
+    el.classList.add('leaving');
+    el.addEventListener('animationend', () => el.remove(), { once: true });
+  }, 3000);
+}
+
+// ---------- SKELETON LOADER ----------
+const skeletonCard = document.getElementById('skeletonCard');
+function showSkeleton(show){
+  skeletonCard.classList.toggle('show', !!show);
+}
+
 async function processLink(){
   const url = urlInput.value.trim();
-  if(!url){ setStatus(`Tempel tautan ${currentPlatform === 'tiktok' ? 'TikTok' : 'Instagram'} terlebih dahulu.`, true); return; }
+  if(!url){ setStatus('Tempel tautan TikTok terlebih dahulu.', true); return; }
+  if(!/tiktok\.com/i.test(url)){ setStatus('Tautan tidak terlihat seperti URL TikTok.', true); return; }
+  await fetchTikTok(url);
+}
 
-  if(currentPlatform === 'tiktok'){
-    if(!/tiktok\.com/i.test(url)){ setStatus('Tautan tidak terlihat seperti URL TikTok.', true); return; }
-    await fetchTikTok(url);
-  }else{
-    if(!/instagram\.com/i.test(url)){ setStatus('Tautan tidak terlihat seperti URL Instagram.', true); return; }
-    await fetchInstagram(url);
+// Daftar endpoint TikTok: dicoba berurutan, kalau yang pertama gagal/down,
+// otomatis lanjut ke endpoint berikutnya (fallback). Tambah/ganti baris di
+// array ini kalau salah satu API berhenti berfungsi.
+const TIKTOK_ENDPOINTS = [
+  {
+    name: 'tikwm',
+    build: (url) => 'https://www.tikwm.com/api/?url=' + encodeURIComponent(url),
+    parse: (json) => {
+      if(json.code !== 0 || !json.data) return null;
+      const d = json.data;
+      return {
+        play: d.play, hdplay: d.hdplay, cover: d.cover || d.origin_cover,
+        title: d.title, author: d.author?.unique_id, music: d.music,
+        likes: d.digg_count, views: d.play_count, comments: d.comment_count,
+        duration: d.duration
+      };
+    }
+  },
+  {
+    name: 'tikwm-alt',
+    build: (url) => 'https://tikwm.com/api/?url=' + encodeURIComponent(url),
+    parse: (json) => {
+      if(json.code !== 0 || !json.data) return null;
+      const d = json.data;
+      return {
+        play: d.play, hdplay: d.hdplay, cover: d.cover || d.origin_cover,
+        title: d.title, author: d.author?.unique_id, music: d.music,
+        likes: d.digg_count, views: d.play_count, comments: d.comment_count,
+        duration: d.duration
+      };
+    }
   }
+];
+
+function formatCount(n){
+  if(n === undefined || n === null) return null;
+  if(n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'jt';
+  if(n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'rb';
+  return String(n);
+}
+function formatDuration(sec){
+  if(!sec && sec !== 0) return null;
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function renderVideoStats(data){
+  const parts = [];
+  const likes = formatCount(data.likes);
+  const views = formatCount(data.views);
+  const dur = formatDuration(data.duration);
+  if(likes !== null) parts.push(`${likes} suka`);
+  if(views !== null) parts.push(`▶ ${views} tayangan`);
+  if(dur !== null) parts.push(`⏱ ${dur}`);
+  videoStats.textContent = parts.join('   ·   ');
+  videoStats.style.display = parts.length ? '' : 'none';
 }
 
 async function fetchTikTok(url){
   fetchBtn.disabled = true;
   resultCard.classList.remove('show');
+  showSkeleton(true);
   setStatus('Mengambil data video…');
 
-  try{
-    // Layanan publik pihak ketiga untuk resolve link TikTok (tanpa watermark)
-    const res = await fetch('https://www.tikwm.com/api/?url=' + encodeURIComponent(url));
-    if(!res.ok) throw new Error('network');
-    const json = await res.json();
+  let result = null;
+  let lastErr = null;
 
-    if(json.code !== 0 || !json.data) throw new Error('not_found');
-
-    currentData = json.data;
-    thumbImg.src = currentData.cover || currentData.origin_cover || '';
-    videoTitle.textContent = currentData.title ? currentData.title.slice(0,90) : 'Video TikTok';
-    videoAuthor.textContent = '@' + (currentData.author?.unique_id || 'unknown');
-    dlVideo.textContent = '⬇ Video MP4 (No Watermark)';
-    dlAudio.style.display = '';
-
-    resultCard.classList.add('show');
-    setStatus('Berhasil! Pilih format unduhan di bawah.');
-  }catch(err){
-    setStatus('Gagal mengambil video. Layanan pihak ketiga mungkin sedang tidak tersedia atau tautan tidak valid — coba lagi beberapa saat.', true);
-  }finally{
-    fetchBtn.disabled = false;
+  for(const endpoint of TIKTOK_ENDPOINTS){
+    try{
+      const res = await fetch(endpoint.build(url));
+      if(!res.ok) throw new Error('network');
+      const json = await res.json();
+      const parsed = endpoint.parse(json);
+      if(!parsed || !(parsed.play || parsed.hdplay)) throw new Error('not_found');
+      result = parsed;
+      break; // berhasil, tidak perlu coba endpoint berikutnya
+    }catch(err){
+      lastErr = err;
+      // lanjut coba endpoint cadangan berikutnya
+    }
   }
-}
-
-async function fetchInstagram(url){
-  // Endpoint gratis tanpa API key, dari proyek open-source insta-reel-api:
-  // https://github.com/VirtualPirate/insta-reel-api
-  // Pakai demo publik bawaan repo (tanpa perlu deploy sendiri). Ini instance
-  // BERSAMA milik komunitas — bisa lambat, kena limit, atau mati sewaktu-waktu.
-  // Kalau kamu sudah deploy sendiri (Render/Koyeb), ganti URL di bawah ini.
-  const INSTAGRAM_API_ENDPOINT = 'https://instagram-reel-api.onrender.com';
-
-  fetchBtn.disabled = true;
-  resultCard.classList.remove('show');
-  setStatus('Mengambil data video…');
 
   try{
-    const res = await fetch(INSTAGRAM_API_ENDPOINT + '/?url=' + encodeURIComponent(url));
-    if(!res.ok) throw new Error('network');
-    const json = await res.json();
-    if(!json.download_link) throw new Error('not_found');
+    if(!result) throw lastErr || new Error('all_failed');
 
-    currentData = { play: json.download_link, cover: json.thumbnail, title: json.title };
-    thumbImg.src = currentData.cover || '';
-    videoTitle.textContent = currentData.title ? currentData.title.slice(0,90) : 'Video Instagram';
-    videoAuthor.textContent = 'Instagram';
-    dlVideo.textContent = '⬇ Video MP4';
-    dlAudio.style.display = 'none';
+    currentData = result;
+    const playUrl = result.hdplay || result.play || '';
+    videoPlayer.poster = result.cover || '';
+    videoPlayer.src = playUrl;
+    videoPlayer.load();
+    videoTitle.textContent = result.title ? result.title.slice(0,90) : 'Video TikTok';
+    videoAuthor.textContent = '@' + (result.author || 'unknown');
+    renderVideoStats(result);
+    dlVideo.textContent = '⬇ Download MP4';
+    dlAudio.style.display = result.music ? '' : 'none';
 
+    showSkeleton(false);
     resultCard.classList.add('show');
     setStatus('Berhasil! Pilih format unduhan di bawah.');
+    showToast('Video ditemukan, siap diunduh.');
   }catch(err){
-    setStatus('Gagal mengambil video Instagram. Server demo publik mungkin sedang "tidur" (coba lagi dalam 30 detik) atau ramai dipakai orang lain. Untuk hasil lebih stabil, deploy instance sendiri via Render/Koyeb dan ganti INSTAGRAM_API_ENDPOINT di kode.', true);
+    showSkeleton(false);
+    setStatus('Gagal mengambil video. Semua layanan pihak ketiga sedang tidak tersedia atau tautan tidak valid — coba lagi beberapa saat.', true);
+    showToast('Gagal mengambil video.', true);
   }finally{
     fetchBtn.disabled = false;
   }
@@ -333,13 +661,121 @@ urlInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') processLink(
 dlVideo.addEventListener('click', () => {
   if(!currentData) return;
   const link = currentData.hdplay || currentData.play;
-  if(link) window.open(link, '_blank');
+  if(link){
+    window.open(link, '_blank');
+    showToast('Video MP4 sedang diunduh.');
+  }
 });
 
 dlAudio.addEventListener('click', () => {
   if(!currentData) return;
-  if(currentData.music) window.open(currentData.music, '_blank');
+  if(currentData.music){
+    window.open(currentData.music, '_blank');
+    showToast('Audio MP3 sedang diunduh.');
+  }
 });
+
+// ---------- BRAT STICKER GENERATOR ----------
+const bratCanvas = document.getElementById('bratCanvas');
+const bratCtx = bratCanvas.getContext('2d');
+const bratText = document.getElementById('bratText');
+const bratColors = document.querySelectorAll('#bratColors .swatch');
+const bratBlur = document.getElementById('bratBlur');
+const bratLower = document.getElementById('bratLower');
+const bratDlPng = document.getElementById('bratDlPng');
+
+let bratBg = '#8ace00';
+
+function textColorFor(bg){
+  // dark text on light bg, light text on dark bg (matches the brat aesthetic)
+  return (bg === '#000000' || bg === '#3d5afe') ? '#f4f4f4' : '#111111';
+}
+
+function wrapLines(ctx, text, maxWidth){
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines = [];
+  let line = '';
+  words.forEach(word => {
+    const test = line ? line + ' ' + word : word;
+    if(ctx.measureText(test).width > maxWidth && line){
+      lines.push(line);
+      line = word;
+    }else{
+      line = test;
+    }
+  });
+  if(line) lines.push(line);
+  return lines.length ? lines : [''];
+}
+
+function drawBrat(){
+  const size = bratCanvas.width; // 512
+  bratCtx.clearRect(0, 0, size, size);
+
+  // background
+  bratCtx.fillStyle = bratBg;
+  bratCtx.fillRect(0, 0, size, size);
+
+  let raw = bratText.value || '';
+  if(bratLower.checked) raw = raw.toLowerCase();
+
+  const fg = textColorFor(bratBg);
+  const padding = 48;
+  const maxWidth = size - padding * 2;
+
+  // fit font size so wrapped text stays inside the canvas
+  let fontSize = 110;
+  let lines = [];
+  bratCtx.textBaseline = 'middle';
+  bratCtx.textAlign = 'center';
+
+  while(fontSize > 24){
+    bratCtx.font = `400 ${fontSize}px 'Helvetica Neue', Arial, sans-serif`;
+    lines = wrapLines(bratCtx, raw, maxWidth);
+    const totalHeight = lines.length * fontSize * 1.05;
+    if(totalHeight <= size - padding * 2) break;
+    fontSize -= 4;
+  }
+
+  bratCtx.save();
+  if(bratBlur.checked){
+    bratCtx.filter = 'blur(2.2px)';
+  }
+  bratCtx.fillStyle = fg;
+  bratCtx.font = `400 ${fontSize}px 'Helvetica Neue', Arial, sans-serif`;
+
+  const lineHeight = fontSize * 1.05;
+  const startY = size / 2 - ((lines.length - 1) * lineHeight) / 2;
+  lines.forEach((ln, i) => {
+    bratCtx.fillText(ln, size / 2, startY + i * lineHeight);
+  });
+  bratCtx.restore();
+}
+
+bratColors.forEach(sw => {
+  sw.addEventListener('click', () => {
+    bratColors.forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    bratBg = sw.dataset.color;
+    drawBrat();
+  });
+});
+
+bratText.addEventListener('input', drawBrat);
+bratBlur.addEventListener('change', drawBrat);
+bratLower.addEventListener('change', drawBrat);
+
+bratDlPng.addEventListener('click', () => {
+  const link = document.createElement('a');
+  const name = (bratText.value.trim() || 'brat').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
+  link.download = `stiker-brat-${name || 'sticker'}.png`;
+  link.href = bratCanvas.toDataURL('image/png');
+  link.click();
+  showToast('Stiker brat berhasil disimpan.');
+});
+
+// initial render in case brat tab starts active
+drawBrat();
 </script>
 
 </body>
