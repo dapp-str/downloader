@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://toksave-download.vercel.app/sitemap.xml
