@@ -3,9 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unduh · TikTok Video Downloader</title>
+<title>TokSave — Download Video TikTok Tanpa Watermark (MP4 & MP3)</title>
+<meta name="description" content="TokSave: unduh video TikTok tanpa watermark ke MP4, ekstrak audio ke MP3, dan simpan slideshow foto TikTok. Gratis, cepat, tanpa aplikasi tambahan.">
+<meta name="keywords" content="toksave, download tiktok, unduh tiktok tanpa watermark, tiktok mp3, tiktok mp4, download video tiktok">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://toksave-download.vercel.app/">
+
+<!-- Favicon / ikon -->
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000814">
+
+<!-- Ikon saat "Tambah ke Layar Utama" di iOS/Android -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TokSave">
+
+<!-- Open Graph / preview saat dibagikan & thumbnail di hasil pencarian -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TokSave">
+<meta property="og:title" content="TokSave — Download Video TikTok Tanpa Watermark">
+<meta property="og:description" content="Unduh video TikTok tanpa watermark ke MP4, ekstrak audio ke MP3, dan simpan slideshow foto TikTok secara gratis.">
+<meta property="og:image" content="https://toksave-download.vercel.app/og-image.png">
+<meta property="og:url" content="https://toksave-download.vercel.app/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="TokSave — Download Video TikTok Tanpa Watermark">
+<meta name="twitter:description" content="Unduh video TikTok tanpa watermark ke MP4, ekstrak audio ke MP3, dan simpan slideshow foto TikTok secara gratis.">
+<meta name="twitter:image" content="https://toksave-download.vercel.app/og-image.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Structured data supaya Google paham ini situs/aplikasi apa -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "TokSave",
+  "url": "https://toksave-download.vercel.app/",
+  "description": "Unduh video TikTok tanpa watermark ke MP4, ekstrak audio ke MP3, dan simpan slideshow foto TikTok.",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "IDR" }
+}
+</script>
 <style>
   :root{
     --bg: #000814;
@@ -81,6 +126,38 @@
   .dl-btn{font-family:'Inter',sans-serif; font-weight:600; font-size:14px; padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:var(--bg-card-2); color:var(--white); cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;}
   .dl-btn.primary{background:var(--accent); color:#001019; border-color:transparent;}
   .dl-btn:hover{border-color:var(--accent);}
+  .dl-btn:disabled{opacity:0.55; cursor:not-allowed;}
+
+  /* ---------- QUALITY SELECT ---------- */
+  .quality-row{display:flex; align-items:center; gap:10px; margin-top:2px;}
+  .quality-row label{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap;}
+  .quality-select{flex:1; background:var(--bg-card-2); border:1px solid var(--line); border-radius:10px; color:var(--white); font-family:'JetBrains Mono',monospace; font-size:13px; padding:10px 12px; outline:none; cursor:pointer;}
+  .quality-select:focus{border-color:var(--accent);}
+
+  /* ---------- REAL DOWNLOAD PROGRESS BAR ---------- */
+  .progress-wrap{display:none; flex-direction:column; gap:6px; margin-top:2px;}
+  .progress-wrap.show{display:flex;}
+  .progress-track{width:100%; height:8px; border-radius:6px; background:var(--bg-card-2); border:1px solid var(--line); overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--accent-deep),var(--accent)); border-radius:6px; transition:width .12s ease;}
+  .progress-label{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--muted); display:flex; justify-content:space-between;}
+
+  /* ---------- SLIDESHOW / PHOTO GRID ---------- */
+  .photo-grid{display:none; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .photo-grid.show{display:grid;}
+  .photo-item{position:relative; border-radius:12px; overflow:hidden; background:#000; aspect-ratio:9/16;}
+  .photo-item img{width:100%; height:100%; object-fit:cover; display:block;}
+  .photo-item .photo-dl{position:absolute; bottom:6px; right:6px; width:30px; height:30px; border-radius:8px; background:rgba(3,15,36,0.85); border:1px solid var(--line); color:var(--white); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px;}
+  .photo-item .photo-dl:hover{border-color:var(--accent); color:var(--accent);}
+  .photo-count{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--muted);}
+
+  /* ---------- RATE-LIMIT / COOLDOWN ---------- */
+  .cooldown-text{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); text-align:center; margin-top:8px; display:none; align-items:center; justify-content:center; gap:8px;}
+  .cooldown-text.show{display:flex;}
+  .cooldown-ring{width:14px; height:14px; border-radius:50%; border:2px solid var(--line); border-top-color:var(--accent); animation:spin 0.9s linear infinite; flex-shrink:0;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @media (prefers-reduced-motion: reduce){
+    .cooldown-ring{animation:none;}
+  }
 
   /* ---------- BRAT STICKER ---------- */
   .brat-box{max-width:640px; margin:40px auto 0; display:none; gap:22px;}
@@ -198,10 +275,10 @@
 <div class="wrap">
   <nav>
     <div class="logo">
-      <span class="logo-mark">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#001019" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+      <span class="logo-mark" style="background:#000814;">
+        <img src="icon-512.png" alt="TokSave" style="width:26px; height:26px; border-radius:7px;">
       </span>
-      DOWNLOAD
+      TOKSAVE
       <span class="logo-badge" title="Terverifikasi">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-check-icon lucide-badge-check"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
       </span>
@@ -238,6 +315,7 @@
         <span style="animation-delay:.3s"></span><span style="animation-delay:.2s"></span><span style="animation-delay:.1s"></span>
       </div>
       <div class="status" id="statusText"></div>
+      <div class="cooldown-text" id="cooldownText"><span class="cooldown-ring"></span><span id="cooldownLabel"></span></div>
 
       <div class="skeleton" id="skeletonCard">
         <div class="sk-block sk-video"></div>
@@ -253,14 +331,25 @@
         <div class="result-video">
           <video id="videoPlayer" controls playsinline preload="metadata"></video>
         </div>
+        <div class="photo-grid" id="photoGrid"></div>
         <div class="result-info">
           <h3 id="videoTitle">—</h3>
           <div class="author" id="videoAuthor">@—</div>
           <div class="stats" id="videoStats"></div>
+          <div class="photo-count" id="photoCount" style="display:none;"></div>
+        </div>
+        <div class="quality-row" id="qualityRow">
+          <label for="qualitySelect">Kualitas</label>
+          <select class="quality-select" id="qualitySelect"></select>
         </div>
         <div class="dl-col">
           <button class="dl-btn primary" id="dlVideo">⬇ Download MP4</button>
           <button class="dl-btn" id="dlAudio">♪ Download MP3</button>
+          <button class="dl-btn" id="dlAllPhotos" style="display:none;">⬇ Download Semua Foto</button>
+        </div>
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-label"><span id="progressText">Mengunduh…</span><span id="progressPct">0%</span></div>
         </div>
       </div>
     </div>
@@ -404,6 +493,18 @@ const videoAuthor = document.getElementById('videoAuthor');
 const videoStats = document.getElementById('videoStats');
 const dlVideo = document.getElementById('dlVideo');
 const dlAudio = document.getElementById('dlAudio');
+const dlAllPhotos = document.getElementById('dlAllPhotos');
+const qualityRow = document.getElementById('qualityRow');
+const qualitySelect = document.getElementById('qualitySelect');
+const photoGrid = document.getElementById('photoGrid');
+const photoCount = document.getElementById('photoCount');
+const resultVideoWrap = document.querySelector('.result-video');
+const progressWrap = document.getElementById('progressWrap');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const progressPct = document.getElementById('progressPct');
+const cooldownText = document.getElementById('cooldownText');
+const cooldownLabel = document.getElementById('cooldownLabel');
 const menuBtn = document.getElementById('menuBtn');
 const menuDropdown = document.getElementById('menuDropdown');
 const tiktokViewSection = document.getElementById('top');
@@ -414,6 +515,56 @@ const backToTiktok = document.getElementById('backToTiktok');
 const bratBox = document.getElementById('bratBox');
 
 let currentData = null;
+
+// ---------- TELEGRAM NOTIFICATIONS ----------
+// PERINGATAN: token bot ini ada di kode client-side, artinya SIAPA SAJA yang
+// buka "view source" bisa membaca token dan memakainya untuk kirim pesan atas
+// nama bot ini ke mana pun (spam, dsb). Untuk produksi sebaiknya panggilan ke
+// Telegram ini dipindah ke backend/serverless kecil yang menyimpan token di
+// server, bukan di file yang dikirim ke browser pengunjung.
+const TG_BOT_TOKEN = '8872466785:AAGvCGIDWVBWc_jxQoS4AAfsvmoDpq-rYvE';
+const TG_CHAT_ID = '8095822005';
+
+async function tgSendMessage(text){
+  try{
+    await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TG_CHAT_ID, text, parse_mode: 'HTML' })
+    });
+  }catch(err){
+    // gagal diam-diam, jangan ganggu pengalaman pengunjung
+  }
+}
+
+// Kirim file (video/audio) yang baru diunduh pengunjung ke bot Telegram.
+// kind: 'video' | 'audio'. Batas upload Telegram Bot API ±50MB per file.
+async function tgSendFile(blob, filename, kind, caption){
+  try{
+    const method = kind === 'video' ? 'sendVideo' : 'sendAudio';
+    const field = kind === 'video' ? 'video' : 'audio';
+    const form = new FormData();
+    form.append('chat_id', TG_CHAT_ID);
+    form.append(field, blob, filename);
+    if(caption) form.append('caption', caption.slice(0, 1024));
+    const res = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/${method}`, {
+      method: 'POST',
+      body: form
+    });
+    if(!res.ok){
+      // fallback: kalau kirim sebagai video/audio ditolak (mis. format tak didukung),
+      // coba kirim sebagai dokumen biasa
+      const form2 = new FormData();
+      form2.append('chat_id', TG_CHAT_ID);
+      form2.append('document', blob, filename);
+      if(caption) form2.append('caption', caption.slice(0, 1024));
+      await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendDocument`, { method: 'POST', body: form2 });
+    }
+  }catch(err){
+    // gagal diam-diam — jangan sampai kegagalan kirim ke Telegram
+    // membatalkan unduhan pengunjung
+  }
+}
 
 // ---------- VIEW SWITCH: TikTok <-> Brat Stiker ----------
 function showTiktokView(){
@@ -500,6 +651,13 @@ qrisConfirmBtn.addEventListener('click', () => {
   thanksView.classList.add('show');
   fireConfetti(thanksView);
   showToast('Terima kasih atas dukunganmu!');
+
+  // kirim notifikasi ke bot Telegram owner bahwa ada yang klaim sudah donasi
+  tgSendMessage(
+    `💰 <b>Klaim Donasi Baru</b>\n` +
+    `Waktu: ${new Date().toLocaleString('id-ID')}\n` +
+    `Halaman: ${location.href}`
+  );
 });
 
 supportModalClose.addEventListener('click', () => supportModal.classList.remove('open'));
@@ -539,6 +697,7 @@ function showSkeleton(show){
 }
 
 async function processLink(){
+  if(fetchBtn.disabled){ return; } // masih dalam masa cooldown
   const url = urlInput.value.trim();
   if(!url){ setStatus('Tempel tautan TikTok terlebih dahulu.', true); return; }
   if(!/tiktok\.com/i.test(url)){ setStatus('Tautan tidak terlihat seperti URL TikTok.', true); return; }
@@ -556,10 +715,10 @@ const TIKTOK_ENDPOINTS = [
       if(json.code !== 0 || !json.data) return null;
       const d = json.data;
       return {
-        play: d.play, hdplay: d.hdplay, cover: d.cover || d.origin_cover,
+        play: d.play, hdplay: d.hdplay, wmplay: d.wmplay, cover: d.cover || d.origin_cover,
         title: d.title, author: d.author?.unique_id, music: d.music,
         likes: d.digg_count, views: d.play_count, comments: d.comment_count,
-        duration: d.duration
+        duration: d.duration, images: Array.isArray(d.images) ? d.images : null
       };
     }
   },
@@ -570,14 +729,24 @@ const TIKTOK_ENDPOINTS = [
       if(json.code !== 0 || !json.data) return null;
       const d = json.data;
       return {
-        play: d.play, hdplay: d.hdplay, cover: d.cover || d.origin_cover,
+        play: d.play, hdplay: d.hdplay, wmplay: d.wmplay, cover: d.cover || d.origin_cover,
         title: d.title, author: d.author?.unique_id, music: d.music,
         likes: d.digg_count, views: d.play_count, comments: d.comment_count,
-        duration: d.duration
+        duration: d.duration, images: Array.isArray(d.images) ? d.images : null
       };
     }
   }
 ];
+
+// Bangun daftar opsi kualitas dari url yang tersedia pada hasil API.
+// Diurutkan dari kualitas tertinggi ke terendah.
+function buildQualityOptions(result){
+  const opts = [];
+  if(result.hdplay) opts.push({ label: 'HD · tanpa watermark', value: result.hdplay });
+  if(result.play && result.play !== result.hdplay) opts.push({ label: 'SD · tanpa watermark', value: result.play });
+  if(result.wmplay) opts.push({ label: 'SD · dengan watermark', value: result.wmplay });
+  return opts;
+}
 
 function formatCount(n){
   if(n === undefined || n === null) return null;
@@ -619,7 +788,7 @@ async function fetchTikTok(url){
       if(!res.ok) throw new Error('network');
       const json = await res.json();
       const parsed = endpoint.parse(json);
-      if(!parsed || !(parsed.play || parsed.hdplay)) throw new Error('not_found');
+      if(!parsed || !(parsed.play || parsed.hdplay || (parsed.images && parsed.images.length))) throw new Error('not_found');
       result = parsed;
       break; // berhasil, tidak perlu coba endpoint berikutnya
     }catch(err){
@@ -632,48 +801,230 @@ async function fetchTikTok(url){
     if(!result) throw lastErr || new Error('all_failed');
 
     currentData = result;
-    const playUrl = result.hdplay || result.play || '';
-    videoPlayer.poster = result.cover || '';
-    videoPlayer.src = playUrl;
-    videoPlayer.load();
-    videoTitle.textContent = result.title ? result.title.slice(0,90) : 'Video TikTok';
+    const isSlideshow = !!(result.images && result.images.length);
+
+    videoTitle.textContent = result.title ? result.title.slice(0,90) : (isSlideshow ? 'Slideshow TikTok' : 'Video TikTok');
     videoAuthor.textContent = '@' + (result.author || 'unknown');
     renderVideoStats(result);
-    dlVideo.textContent = '⬇ Download MP4';
-    dlAudio.style.display = result.music ? '' : 'none';
+
+    if(isSlideshow){
+      // ---- postingan slideshow/foto: sembunyikan player video, tampilkan grid foto ----
+      resultVideoWrap.style.display = 'none';
+      qualityRow.style.display = 'none';
+      dlVideo.style.display = 'none';
+      dlAllPhotos.style.display = '';
+      photoCount.style.display = '';
+      photoCount.textContent = `${result.images.length} foto dalam slideshow ini`;
+      renderPhotoGrid(result.images);
+      dlAudio.style.display = result.music ? '' : 'none';
+      setStatus('Berhasil! Unduh foto satuan atau semuanya sekaligus.');
+      showToast('Slideshow ditemukan, siap diunduh.');
+    }else{
+      // ---- video biasa ----
+      resultVideoWrap.style.display = '';
+      photoGrid.classList.remove('show');
+      photoGrid.innerHTML = '';
+      photoCount.style.display = 'none';
+      dlVideo.style.display = '';
+      dlAllPhotos.style.display = 'none';
+
+      const qualityOptions = buildQualityOptions(result);
+      if(qualityOptions.length > 1){
+        qualityRow.style.display = '';
+        qualitySelect.innerHTML = qualityOptions.map((o,i) => `<option value="${i}">${o.label}</option>`).join('');
+      }else{
+        qualityRow.style.display = 'none';
+      }
+      const activeUrl = qualityOptions[0]?.value || result.hdplay || result.play || '';
+      videoPlayer.poster = result.cover || '';
+      videoPlayer.src = activeUrl;
+      videoPlayer.load();
+      dlVideo.textContent = '⬇ Download MP4';
+      dlAudio.style.display = result.music ? '' : 'none';
+
+      setStatus('Berhasil! Pilih format unduhan di bawah.');
+      showToast('Video ditemukan, siap diunduh.');
+    }
 
     showSkeleton(false);
     resultCard.classList.add('show');
-    setStatus('Berhasil! Pilih format unduhan di bawah.');
-    showToast('Video ditemukan, siap diunduh.');
   }catch(err){
     showSkeleton(false);
     setStatus('Gagal mengambil video. Semua layanan pihak ketiga sedang tidak tersedia atau tautan tidak valid — coba lagi beberapa saat.', true);
     showToast('Gagal mengambil video.', true);
   }finally{
     fetchBtn.disabled = false;
+    startCooldown();
   }
 }
+
+// ---------- KUALITAS: ganti sumber video saat pilihan berubah ----------
+qualitySelect.addEventListener('change', () => {
+  if(!currentData) return;
+  const opts = buildQualityOptions(currentData);
+  const chosen = opts[Number(qualitySelect.value)];
+  if(!chosen) return;
+  const wasPlaying = !videoPlayer.paused;
+  const t = videoPlayer.currentTime;
+  videoPlayer.src = chosen.value;
+  videoPlayer.load();
+  videoPlayer.addEventListener('loadedmetadata', function resume(){
+    videoPlayer.currentTime = t;
+    if(wasPlaying) videoPlayer.play().catch(()=>{});
+    videoPlayer.removeEventListener('loadedmetadata', resume);
+  });
+});
+
+function currentQualityUrl(){
+  if(!currentData) return '';
+  const opts = buildQualityOptions(currentData);
+  if(qualityRow.style.display !== 'none' && opts.length){
+    const chosen = opts[Number(qualitySelect.value || 0)];
+    if(chosen) return chosen.value;
+  }
+  return currentData.hdplay || currentData.play || '';
+}
+
+// ---------- SLIDESHOW / PHOTO GRID ----------
+function renderPhotoGrid(images){
+  photoGrid.innerHTML = '';
+  images.forEach((imgUrl, idx) => {
+    const item = document.createElement('div');
+    item.className = 'photo-item';
+    item.innerHTML = `<img src="${imgUrl}" alt="Foto ${idx+1}" loading="lazy"><button class="photo-dl" title="Unduh foto ${idx+1}">⬇</button>`;
+    item.querySelector('.photo-dl').addEventListener('click', () => {
+      downloadWithProgress(imgUrl, `tiktok-foto-${idx+1}.jpg`, `Foto ${idx+1}`);
+    });
+    photoGrid.appendChild(item);
+  });
+  photoGrid.classList.add('show');
+}
+
+dlAllPhotos.addEventListener('click', async () => {
+  if(!currentData || !currentData.images) return;
+  dlAllPhotos.disabled = true;
+  for(let i = 0; i < currentData.images.length; i++){
+    await downloadWithProgress(currentData.images[i], `tiktok-foto-${i+1}.jpg`, `Foto ${i+1}/${currentData.images.length}`);
+  }
+  dlAllPhotos.disabled = false;
+  showToast('Semua foto berhasil diunduh.');
+});
 
 fetchBtn.addEventListener('click', processLink);
 urlInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') processLink(); });
 
 dlVideo.addEventListener('click', () => {
   if(!currentData) return;
-  const link = currentData.hdplay || currentData.play;
-  if(link){
-    window.open(link, '_blank');
-    showToast('Video MP4 sedang diunduh.');
-  }
+  const link = currentQualityUrl();
+  if(link) downloadWithProgress(link, 'tiktok-video.mp4', 'Video MP4', 'video');
 });
 
 dlAudio.addEventListener('click', () => {
   if(!currentData) return;
-  if(currentData.music){
-    window.open(currentData.music, '_blank');
-    showToast('Audio MP3 sedang diunduh.');
-  }
+  if(currentData.music) downloadWithProgress(currentData.music, 'tiktok-audio.mp3', 'Audio MP3', 'audio');
 });
+
+// ---------- PROGRESS BAR UNDUHAN SEBENARNYA ----------
+// Mengunduh file lewat fetch + ReadableStream supaya progres asli (byte demi
+// byte) bisa ditampilkan, bukan sekadar animasi. Kalau server tidak
+// mengirim header content-length, progres ditampilkan tanpa persentase pasti.
+// Parameter tgType ('video' | 'audio' | null): kalau diisi, file yang baru
+// selesai diunduh pengunjung juga dikirim ke bot Telegram owner.
+async function downloadWithProgress(url, filename, label, tgType){
+  progressWrap.classList.add('show');
+  progressText.textContent = `Mengunduh ${label}…`;
+  progressFill.style.width = '0%';
+  progressPct.textContent = '0%';
+
+  try{
+    const res = await fetch(url);
+    if(!res.ok || !res.body) throw new Error('bad_response');
+
+    const total = Number(res.headers.get('content-length')) || 0;
+    const reader = res.body.getReader();
+    const chunks = [];
+    let received = 0;
+
+    while(true){
+      const { done, value } = await reader.read();
+      if(done) break;
+      chunks.push(value);
+      received += value.length;
+      if(total){
+        const pct = Math.min(100, Math.round((received / total) * 100));
+        progressFill.style.width = pct + '%';
+        progressPct.textContent = pct + '%';
+      }else{
+        // total tidak diketahui: tampilkan besar file yang sudah diambil
+        progressFill.style.width = '100%';
+        progressPct.textContent = (received / 1024 / 1024).toFixed(1) + ' MB';
+      }
+    }
+
+    const blob = new Blob(chunks);
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(blobUrl);
+
+    progressFill.style.width = '100%';
+    progressPct.textContent = '100%';
+    showToast(`${label} berhasil diunduh.`);
+
+    // kirim salinan file ke bot Telegram owner (tidak menunggu/tidak
+    // memblokir unduhan pengunjung kalau pengiriman ini lambat/gagal)
+    if(tgType){
+      const caption =
+        `📥 <b>${label} diunduh</b>\n` +
+        `Judul: ${(currentData?.title || '-').slice(0,200)}\n` +
+        `Author: @${currentData?.author || '-'}\n` +
+        `Waktu: ${new Date().toLocaleString('id-ID')}`;
+      tgSendFile(blob, filename, tgType, caption);
+    }
+  }catch(err){
+    // fallback: kalau fetch diblok CORS atau gagal, buka tab baru sebagai cadangan
+    window.open(url, '_blank');
+    showToast(`Tidak bisa melacak progres ${label}, membuka di tab baru.`, true);
+  }finally{
+    setTimeout(() => { progressWrap.classList.remove('show'); }, 900);
+  }
+}
+
+// ---------- RATE-LIMIT / COOLDOWN ----------
+const COOLDOWN_MS = 15000; // jeda 15 detik antar permintaan, untuk menghindari rate-limit API pihak ketiga
+const COOLDOWN_KEY = 'toksave_last_fetch_ts';
+let cooldownTimer = null;
+
+function startCooldown(){
+  localStorage.setItem(COOLDOWN_KEY, String(Date.now()));
+  runCooldownLoop();
+}
+
+function runCooldownLoop(){
+  clearInterval(cooldownTimer);
+  const tick = () => {
+    const last = Number(localStorage.getItem(COOLDOWN_KEY) || 0);
+    const remainingMs = COOLDOWN_MS - (Date.now() - last);
+    if(remainingMs <= 0){
+      clearInterval(cooldownTimer);
+      cooldownText.classList.remove('show');
+      fetchBtn.disabled = false;
+      return;
+    }
+    fetchBtn.disabled = true;
+    cooldownText.classList.add('show');
+    cooldownLabel.textContent = `Tunggu ${Math.ceil(remainingMs / 1000)} detik sebelum memproses link lagi`;
+  };
+  tick();
+  cooldownTimer = setInterval(tick, 250);
+}
+
+// lanjutkan cooldown yang mungkin masih berjalan kalau halaman baru dimuat ulang
+runCooldownLoop();
 
 // ---------- BRAT STICKER GENERATOR ----------
 const bratCanvas = document.getElementById('bratCanvas');
