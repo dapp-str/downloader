@@ -1,0 +1,27 @@
+# Setup Dashboard Admin TokSave
+
+File yang ditambahkan/diubah:
+- `api/settings.js` — API baca/tulis konten situs (butuh Vercel KV)
+- `admin.html` — halaman dashboard, dilindungi password
+- `index.html` — hero, subjudul, gambar QRIS, dan pesan donasi sekarang diambil dari API, plus link "Admin" kecil di footer
+
+## Langkah setup di Vercel
+
+1. **Push/upload ketiga file ini** ke project Vercel kamu (timpa `index.html` lama, tambahkan `api/settings.js` dan `admin.html`).
+
+2. **Aktifkan Vercel KV**
+   - Buka project di dashboard Vercel → tab **Storage** → **Create Database** → pilih **KV**.
+   - Setelah dibuat, hubungkan ("Connect") ke project ini. Vercel otomatis menambahkan environment variable `KV_REST_API_URL` dan `KV_REST_API_TOKEN`.
+
+3. **Set password admin**
+   - Di tab **Settings → Environment Variables**, tambahkan:
+     - `ADMIN_PASSWORD` = password pilihanmu (contoh: `toksave2026!`)
+   - Redeploy project supaya env var terbaca.
+
+4. **Selesai** — buka `https://domainmu.com/admin.html`, masukkan password, edit judul hero/subjudul/gambar QRIS/pesan donasi, tekan **Simpan Perubahan**. Perubahan langsung tampil untuk semua pengunjung `index.html`.
+
+## Catatan keamanan
+
+- `admin.html` tidak muncul di navigasi utama, tapi tetap ada link kecil di footer situs (`© 2026 TokSave · Admin`). Kalau tidak mau siapa pun bisa menemukannya, hapus link itu di footer `index.html` dan cukup buka `/admin.html` langsung lewat URL.
+- Password dicek di server (`api/settings.js`), bukan disimpan di kode client — aman dari "view source".
+- Endpoint `/api/settings` untuk GET bersifat publik (dibaca semua pengunjung untuk menampilkan konten), tapi POST (mengubah data) selalu butuh header password yang cocok dengan `ADMIN_PASSWORD`.
