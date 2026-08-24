@@ -227,6 +227,8 @@
   @keyframes toast-out{from{opacity:1; transform:translateY(0);} to{opacity:0; transform:translateY(14px);}}
 
   footer{margin-top:80px; border-top:1px solid var(--line); padding:28px 0; text-align:center; color:var(--muted); font-size:12.5px; font-family:'JetBrains Mono',monospace;}
+  footer a{color:var(--muted); border-bottom:1px dotted var(--line);}
+  footer a:hover{color:var(--accent); border-color:var(--accent);}
 
   /* ---------- SUPPORT / QRIS MODAL ---------- */
   .modal-overlay{position:fixed; inset:0; background:rgba(0,8,20,0.78); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:100; padding:24px;}
@@ -300,8 +302,8 @@
 
   <section class="hero" id="top">
     <span class="eyebrow">tempel · proses · simpan</span>
-    <h1>Unduh video TikTok<br><span>dalam hitungan detik.</span></h1>
-    <p class="sub">Tempel tautan videonya. Kami ambil versi MP4 tanpa watermark dan audio MP3-nya sekaligus.</p>
+    <h1 id="heroTitle">Unduh video TikTok<br><span id="heroTitleAccent">dalam hitungan detik.</span></h1>
+    <p class="sub" id="heroSubtitle">Tempel tautan videonya. Kami ambil versi MP4 tanpa watermark dan audio MP3-nya sekaligus.</p>
 
     <div id="tiktokView">
       <div class="fetch-box">
@@ -447,7 +449,7 @@
     <b>Perlu diketahui:</b> Situs ini bergantung pada layanan pihak ketiga untuk mengambil data video, sehingga tidak selalu 100% berhasil untuk semua tautan dan bisa berhenti berfungsi jika layanan tersebut berubah. Gunakan hanya untuk mengunduh kontenmu sendiri atau video yang kamu punya izin untuk disimpan — hormati hak cipta dan kreator asli.
   </div>
 
-  <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi</footer>
+  <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi &nbsp;·&nbsp; <a href="/admin.html">Admin</a></footer>
 </div>
 
 <div class="toast-stack" id="toastStack"></div>
@@ -460,7 +462,7 @@
 
     <div class="qris-view" id="qrisView">
       <h3>Dukung Developer</h3>
-      <p>Kalau situs ini bermanfaat, boleh banget traktir developer kopi lewat scan QRIS di bawah ini.</p>
+      <p id="donationMessage">Kalau situs ini bermanfaat, boleh banget traktir developer kopi lewat scan QRIS di bawah ini.</p>
       <div class="qris-img-wrap">
         <img src="https://i.ibb.co.com/LXVDc8Tr/qr-ID1025444122473-29-06-26-1782730287-1782730287658.jpg" alt="QRIS Dukung Developer" id="qrisImg">
       </div>
@@ -481,6 +483,27 @@
     </div>
   </div>
 </div>
+
+<script>
+// ---------- KONTEN DINAMIS DARI ADMIN DASHBOARD ----------
+// Ambil hero title/subtitle, gambar QRIS, dan pesan donasi dari /api/settings.
+// Kalau API belum di-setup atau gagal, teks default di HTML tetap tampil.
+(async function loadSiteSettings(){
+  try{
+    const res = await fetch('/api/settings');
+    if(!res.ok) return;
+    const s = await res.json();
+
+    if(s.heroTitleLine1) document.getElementById('heroTitle').firstChild.textContent = s.heroTitleLine1;
+    if(s.heroTitleLine2) document.getElementById('heroTitleAccent').textContent = s.heroTitleLine2;
+    if(s.heroSubtitle) document.getElementById('heroSubtitle').textContent = s.heroSubtitle;
+    if(s.qrisImage) document.getElementById('qrisImg').src = s.qrisImage;
+    if(s.donationMessage) document.getElementById('donationMessage').textContent = s.donationMessage;
+  }catch(e){
+    // diam-diam gagal, biarkan konten default tampil
+  }
+})();
+</script>
 
 <script>
 const urlInput = document.getElementById('urlInput');
