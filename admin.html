@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TokSave — Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #000814; --bg-card: #030f24; --bg-card-2: #05142e;
+    --line: #12233f; --accent: #90e0ef; --accent-deep: #48cae4;
+    --white: #ffffff; --muted: #7b93ad; --err: #ff8fa3;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; min-height:100vh;}
+  .wrap{max-width:640px; margin:0 auto; padding:48px 24px 80px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.12em; color:var(--accent); text-transform:uppercase; display:inline-flex; align-items:center; gap:8px;}
+  .eyebrow::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent);}
+  h1{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:30px; margin:14px 0 6px; letter-spacing:-0.02em;}
+  .lede{color:var(--muted); font-size:14px; margin-bottom:36px;}
+
+  .card{background:var(--bg-card); border:1px solid var(--line); border-radius:18px; padding:22px; margin-bottom:18px;}
+  .field{display:flex; flex-direction:column; gap:8px; margin-bottom:18px;}
+  .field:last-child{margin-bottom:0;}
+  label{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;}
+  input[type=text], input[type=password], textarea{
+    background:var(--bg-card-2); border:1px solid var(--line); border-radius:10px;
+    color:var(--white); font-family:'Inter',sans-serif; font-size:14.5px; padding:12px 14px; outline:none; width:100%;
+  }
+  textarea{resize:vertical; min-height:70px; font-family:'Inter',sans-serif;}
+  input:focus, textarea:focus{border-color:var(--accent);}
+  .hint{color:var(--muted); font-size:12px; line-height:1.5;}
+
+  .btn{background:linear-gradient(135deg,var(--accent),var(--accent-deep)); color:#001019; border:none;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14.5px; padding:13px 24px; border-radius:12px;
+    cursor:pointer; width:100%;}
+  .btn:disabled{opacity:.55; cursor:not-allowed;}
+  .btn-ghost{background:var(--bg-card-2); color:var(--white); border:1px solid var(--line); font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; padding:11px 20px; border-radius:10px; cursor:pointer;}
+
+  .status{font-family:'JetBrains Mono',monospace; font-size:13px; margin-top:14px; min-height:18px;}
+  .status.ok{color:var(--accent);}
+  .status.err{color:var(--err);}
+
+  .qris-preview{background:#fff; border-radius:14px; padding:12px; margin-top:8px; display:none;}
+  .qris-preview.show{display:block;}
+  .qris-preview img{width:100%; max-width:220px; display:block; margin:0 auto; border-radius:6px;}
+
+  #gate{max-width:360px; margin:100px auto 0; text-align:center;}
+  #gate .card{text-align:left;}
+  #dashboard{display:none;}
+  #dashboard.show{display:block;}
+
+  footer{margin-top:40px; color:var(--muted); font-size:12px; font-family:'JetBrains Mono',monospace; text-align:center;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="wrap" style="padding-top:0;">
+    <span class="eyebrow">akses terbatas</span>
+    <h1>Masuk Admin</h1>
+    <p class="lede">Masukkan password admin untuk mengelola konten situs.</p>
+    <div class="card">
+      <div class="field">
+        <label for="pwInput">Password</label>
+        <input type="password" id="pwInput" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn" id="unlockBtn">Masuk</button>
+      <div class="status" id="gateStatus"></div>
+    </div>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="wrap">
+    <span class="eyebrow">dashboard admin</span>
+    <h1>Kelola Konten TokSave</h1>
+    <p class="lede">Perubahan di sini langsung tampil untuk semua pengunjung situs.</p>
+
+    <div class="card">
+      <div class="field">
+        <label for="titleLine1">Judul hero — baris 1</label>
+        <input type="text" id="titleLine1" maxlength="80">
+      </div>
+      <div class="field">
+        <label for="titleLine2">Judul hero — baris 2 (warna aksen)</label>
+        <input type="text" id="titleLine2" maxlength="80">
+      </div>
+      <div class="field">
+        <label for="subtitle">Subjudul</label>
+        <textarea id="subtitle" maxlength="220"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label for="qrisImage">URL gambar QRIS</label>
+        <input type="text" id="qrisImage" placeholder="https://...">
+        <div class="qris-preview" id="qrisPreview"><img id="qrisPreviewImg" alt="Pratinjau QRIS"></div>
+      </div>
+      <div class="field">
+        <label for="donationMessage">Pesan ajakan donasi</label>
+        <textarea id="donationMessage" maxlength="220"></textarea>
+      </div>
+    </div>
+
+    <button class="btn" id="saveBtn">Simpan Perubahan</button>
+    <div class="status" id="saveStatus"></div>
+
+    <footer>
+      <button class="btn-ghost" id="logoutBtn" style="margin-top:24px;">Keluar</button>
+    </footer>
+  </div>
+</div>
+
+<script>
+const gate = document.getElementById('gate');
+const dashboard = document.getElementById('dashboard');
+const pwInput = document.getElementById('pwInput');
+const unlockBtn = document.getElementById('unlockBtn');
+const gateStatus = document.getElementById('gateStatus');
+const saveBtn = document.getElementById('saveBtn');
+const saveStatus = document.getElementById('saveStatus');
+const logoutBtn = document.getElementById('logoutBtn');
+
+const fields = {
+  heroTitleLine1: document.getElementById('titleLine1'),
+  heroTitleLine2: document.getElementById('titleLine2'),
+  heroSubtitle: document.getElementById('subtitle'),
+  qrisImage: document.getElementById('qrisImage'),
+  donationMessage: document.getElementById('donationMessage')
+};
+
+const qrisPreview = document.getElementById('qrisPreview');
+const qrisPreviewImg = document.getElementById('qrisPreviewImg');
+
+let adminPassword = '';
+
+function setStatus(el, msg, kind){
+  el.textContent = msg || '';
+  el.className = 'status' + (kind ? ' ' + kind : '');
+}
+
+async function loadSettings(){
+  try{
+    const res = await fetch('/api/settings');
+    const data = await res.json();
+    fields.heroTitleLine1.value = data.heroTitleLine1 || '';
+    fields.heroTitleLine2.value = data.heroTitleLine2 || '';
+    fields.heroSubtitle.value = data.heroSubtitle || '';
+    fields.qrisImage.value = data.qrisImage || '';
+    fields.donationMessage.value = data.donationMessage || '';
+    updateQrisPreview();
+  }catch(e){
+    setStatus(saveStatus, 'Gagal memuat data saat ini.', 'err');
+  }
+}
+
+function updateQrisPreview(){
+  const url = fields.qrisImage.value.trim();
+  if(url){
+    qrisPreviewImg.src = url;
+    qrisPreview.classList.add('show');
+  }else{
+    qrisPreview.classList.remove('show');
+  }
+}
+fields.qrisImage.addEventListener('input', updateQrisPreview);
+
+unlockBtn.addEventListener('click', async () => {
+  const pw = pwInput.value;
+  if(!pw){ setStatus(gateStatus, 'Masukkan password.', 'err'); return; }
+  unlockBtn.disabled = true;
+  setStatus(gateStatus, 'Memeriksa…');
+
+  // verifikasi password dengan mencoba POST kosong (tanpa mengubah data)
+  try{
+    const res = await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': pw },
+      body: JSON.stringify({})
+    });
+    if(res.status === 401){
+      setStatus(gateStatus, 'Password salah.', 'err');
+      unlockBtn.disabled = false;
+      return;
+    }
+    if(!res.ok){
+      const j = await res.json().catch(()=>({}));
+      setStatus(gateStatus, j.error || 'Terjadi kesalahan server.', 'err');
+      unlockBtn.disabled = false;
+      return;
+    }
+    adminPassword = pw;
+    sessionStorage.setItem('toksave_admin_pw', pw);
+    gate.style.display = 'none';
+    dashboard.classList.add('show');
+    loadSettings();
+  }catch(e){
+    setStatus(gateStatus, 'Tidak bisa terhubung ke server.', 'err');
+    unlockBtn.disabled = false;
+  }
+});
+pwInput.addEventListener('keydown', e => { if(e.key === 'Enter') unlockBtn.click(); });
+
+saveBtn.addEventListener('click', async () => {
+  saveBtn.disabled = true;
+  setStatus(saveStatus, 'Menyimpan…');
+  try{
+    const payload = {};
+    for(const k in fields) payload[k] = fields[k].value;
+    const res = await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+      body: JSON.stringify(payload)
+    });
+    const j = await res.json();
+    if(!res.ok) throw new Error(j.error || 'Gagal menyimpan.');
+    setStatus(saveStatus, 'Tersimpan! Perubahan sudah tampil untuk semua pengunjung.', 'ok');
+  }catch(e){
+    setStatus(saveStatus, e.message, 'err');
+  }finally{
+    saveBtn.disabled = false;
+  }
+});
+
+logoutBtn.addEventListener('click', () => {
+  sessionStorage.removeItem('toksave_admin_pw');
+  location.reload();
+});
+
+// coba lanjutkan sesi kalau password sudah tersimpan di tab ini
+const savedPw = sessionStorage.getItem('toksave_admin_pw');
+if(savedPw){
+  pwInput.value = savedPw;
+  unlockBtn.click();
+}
+</script>
+
+</body>
+</html>
