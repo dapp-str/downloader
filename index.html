@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -472,7 +472,7 @@
     <b>Perlu diketahui:</b> Situs ini bergantung pada layanan pihak ketiga untuk mengambil data video, sehingga tidak selalu 100% berhasil untuk semua tautan dan bisa berhenti berfungsi jika layanan tersebut berubah. Gunakan hanya untuk mengunduh kontenmu sendiri atau video yang kamu punya izin untuk disimpan — hormati hak cipta dan kreator asli.
   </div>
 
-  <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi</footer>
+  <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi </footer>
 </div>
 
 <div class="toast-stack" id="toastStack"></div>
@@ -873,17 +873,41 @@ async function fetchMedia(url, platform){
     try{
       const res = await fetch('/api/instagram?url=' + encodeURIComponent(url));
       const json = await res.json();
-      if(!res.ok || !json.videoUrl) throw new Error(json.error || 'Video tidak ditemukan.');
-      result = {
-        play: json.videoUrl,
-        hdplay: json.videoUrl,
-        wmplay: null,
-        cover: json.thumbnail || '',
-        title: json.title || 'Video Instagram',
-        author: json.author || '',
-        music: null,
-        images: null
-      };
+      if(!res.ok || !json.success) throw new Error(json.error || 'Video tidak ditemukan.');
+
+      if(json.isAlbum){
+        // carousel: beberapa foto/video sekaligus, tampilkan sebagai grid
+        result = {
+          play: null, hdplay: null, wmplay: null,
+          cover: (json.items[0] && json.items[0].thumbnail) || '',
+          title: json.title || 'Slideshow Instagram',
+          author: '',
+          music: null,
+          images: json.items.map(it => it.url)
+        };
+      }else if(json.mediaType === 'image'){
+        // foto tunggal: pakai jalur render "foto" yang sama dengan carousel
+        result = {
+          play: null, hdplay: null, wmplay: null,
+          cover: json.thumbnail || '',
+          title: json.title || 'Foto Instagram',
+          author: json.author || '',
+          music: null,
+          images: [json.videoUrl]
+        };
+      }else{
+        result = {
+          play: json.videoUrl,
+          hdplay: json.videoUrl,
+          wmplay: null,
+          cover: json.thumbnail || '',
+          title: json.title || 'Video Instagram',
+          author: json.author || '',
+          music: null,
+          duration: json.duration || undefined,
+          images: null
+        };
+      }
     }catch(err){
       lastErr = err;
     }
