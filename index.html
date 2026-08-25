@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -472,7 +472,7 @@
     <b>Perlu diketahui:</b> Situs ini bergantung pada layanan pihak ketiga untuk mengambil data video, sehingga tidak selalu 100% berhasil untuk semua tautan dan bisa berhenti berfungsi jika layanan tersebut berubah. Gunakan hanya untuk mengunduh kontenmu sendiri atau video yang kamu punya izin untuk disimpan — hormati hak cipta dan kreator asli.
   </div>
 
-  <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi </footer>
+  <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi</footer>
 </div>
 
 <div class="toast-stack" id="toastStack"></div>
@@ -580,6 +580,7 @@ const backToTiktok = document.getElementById('backToTiktok');
 const bratBox = document.getElementById('bratBox');
 
 let currentData = null;
+let currentPlatform = null;
 
 // ---------- TELEGRAM NOTIFICATIONS ----------
 // PERINGATAN: token bot ini ada di kode client-side, artinya SIAPA SAJA yang
@@ -847,6 +848,7 @@ function renderVideoStats(data){
 
 async function fetchMedia(url, platform){
   fetchBtn.disabled = true;
+  currentPlatform = platform;
   resultCard.classList.remove('show');
   showSkeleton(true);
   setStatus('Mengambil data video…');
@@ -918,9 +920,11 @@ async function fetchMedia(url, platform){
 
     currentData = result;
     const isSlideshow = !!(result.images && result.images.length);
+    const platformLabel = platform === 'instagram' ? 'Instagram' : 'TikTok';
 
-    videoTitle.textContent = result.title ? result.title.slice(0,90) : (isSlideshow ? 'Slideshow TikTok' : 'Video TikTok');
-    videoAuthor.textContent = '@' + (result.author || 'unknown');
+    videoTitle.textContent = result.title ? result.title.slice(0,90) : (isSlideshow ? `Slideshow ${platformLabel}` : `Video ${platformLabel}`);
+    videoAuthor.textContent = result.author ? '@' + result.author : '';
+    videoAuthor.style.display = result.author ? '' : 'none';
     renderVideoStats(result);
 
     if(isSlideshow){
@@ -1005,12 +1009,13 @@ function currentQualityUrl(){
 // ---------- SLIDESHOW / PHOTO GRID ----------
 function renderPhotoGrid(images){
   photoGrid.innerHTML = '';
+  const prefix = currentPlatform === 'instagram' ? 'instagram' : 'tiktok';
   images.forEach((imgUrl, idx) => {
     const item = document.createElement('div');
     item.className = 'photo-item';
     item.innerHTML = `<img src="${imgUrl}" alt="Foto ${idx+1}" loading="lazy"><button class="photo-dl" title="Unduh foto ${idx+1}">⬇</button>`;
     item.querySelector('.photo-dl').addEventListener('click', () => {
-      downloadWithProgress(imgUrl, `tiktok-foto-${idx+1}.jpg`, `Foto ${idx+1}`);
+      downloadWithProgress(imgUrl, `${prefix}-foto-${idx+1}.jpg`, `Foto ${idx+1}`);
     });
     photoGrid.appendChild(item);
   });
@@ -1019,9 +1024,10 @@ function renderPhotoGrid(images){
 
 dlAllPhotos.addEventListener('click', async () => {
   if(!currentData || !currentData.images) return;
+  const prefix = currentPlatform === 'instagram' ? 'instagram' : 'tiktok';
   dlAllPhotos.disabled = true;
   for(let i = 0; i < currentData.images.length; i++){
-    await downloadWithProgress(currentData.images[i], `tiktok-foto-${i+1}.jpg`, `Foto ${i+1}/${currentData.images.length}`);
+    await downloadWithProgress(currentData.images[i], `${prefix}-foto-${i+1}.jpg`, `Foto ${i+1}/${currentData.images.length}`);
   }
   dlAllPhotos.disabled = false;
   showToast('Semua foto berhasil diunduh.');
@@ -1033,12 +1039,14 @@ urlInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') processLink(
 dlVideo.addEventListener('click', () => {
   if(!currentData) return;
   const link = currentQualityUrl();
-  if(link) downloadWithProgress(link, 'tiktok-video.mp4', 'Video MP4', 'video');
+  const prefix = currentPlatform === 'instagram' ? 'instagram' : 'tiktok';
+  if(link) downloadWithProgress(link, `${prefix}-video.mp4`, 'Video MP4', 'video');
 });
 
 dlAudio.addEventListener('click', () => {
   if(!currentData) return;
-  if(currentData.music) downloadWithProgress(currentData.music, 'tiktok-audio.mp3', 'Audio MP3', 'audio');
+  const prefix = currentPlatform === 'instagram' ? 'instagram' : 'tiktok';
+  if(currentData.music) downloadWithProgress(currentData.music, `${prefix}-audio.mp3`, 'Audio MP3', 'audio');
 });
 
 // ---------- PROGRESS BAR UNDUHAN SEBENARNYA ----------
