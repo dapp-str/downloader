@@ -89,6 +89,17 @@
   .menu-dropdown a{font-size:13.5px; padding:10px 12px; border-radius:9px; color:var(--white); display:flex; align-items:center; gap:10px;}
   .menu-dropdown a:hover{background:var(--bg-card-2); color:var(--accent);}
 
+  /* ---------- ANNOUNCEMENT BANNER ---------- */
+  .announce-bar{display:none; background:var(--bg-card-2); border-bottom:1px solid var(--line); padding:12px 0;}
+  .announce-bar.show{display:block;}
+  .announce-inner{max-width:1040px; margin:0 auto; padding:0 28px; display:flex; align-items:flex-start; gap:12px;}
+  .announce-icon{width:18px; height:18px; flex-shrink:0; color:var(--accent); margin-top:1px;}
+  .announce-icon svg{width:100%; height:100%;}
+  .announce-text{flex:1; font-size:13.5px; color:var(--white); line-height:1.5;}
+  .announce-close{background:none; border:none; color:var(--muted); cursor:pointer; padding:2px; flex-shrink:0; display:flex;}
+  .announce-close:hover{color:var(--white);}
+  .announce-close svg{width:16px; height:16px;}
+
   /* ---------- HERO ---------- */
   .hero{padding:64px 0 40px; text-align:center;}
   .eyebrow{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; color:var(--accent); text-transform:uppercase; display:inline-flex; align-items:center; gap:8px;}
@@ -273,6 +284,18 @@
 </style>
 </head>
 <body>
+
+<div class="announce-bar" id="announceBar">
+  <div class="announce-inner">
+    <span class="announce-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>
+    </span>
+    <span class="announce-text" id="announceText"></span>
+    <button class="announce-close" id="announceClose" aria-label="Tutup pengumuman">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+</div>
 
 <div class="wrap">
   <nav>
@@ -499,10 +522,29 @@
     if(s.heroSubtitle) document.getElementById('heroSubtitle').textContent = s.heroSubtitle;
     if(s.qrisImage) document.getElementById('qrisImg').src = s.qrisImage;
     if(s.donationMessage) document.getElementById('donationMessage').textContent = s.donationMessage;
+
+    // ---- pengumuman ----
+    const announceBar = document.getElementById('announceBar');
+    const announceText = document.getElementById('announceText');
+    const isOn = s.announcementEnabled === 'true' || s.announcementEnabled === true;
+    const text = (s.announcementText || '').trim();
+    const dismissedText = sessionStorage.getItem('toksave_announce_dismissed');
+
+    if(isOn && text && dismissedText !== text){
+      announceText.textContent = text;
+      announceBar.classList.add('show');
+    }
   }catch(e){
     // diam-diam gagal, biarkan konten default tampil
   }
 })();
+
+document.getElementById('announceClose').addEventListener('click', () => {
+  const bar = document.getElementById('announceBar');
+  const text = document.getElementById('announceText').textContent;
+  sessionStorage.setItem('toksave_announce_dismissed', text);
+  bar.classList.remove('show');
+});
 </script>
 
 <script>
