@@ -1,55 +1,21 @@
 // /api/instagram.js
 // GET /api/instagram?url=https://www.instagram.com/reel/xxxxx/
 //
-// Mengambil halaman post Instagram secara server-side (menghindari CORS),
-// lalu mengekstrak URL video dari meta tag og:video / og:image / og:title
-// yang disematkan Instagram di HTML untuk keperluan SEO/preview link.
-// Hanya berfungsi untuk post PUBLIK (bukan akun private).
+// Mengambil video/foto Instagram lewat FastSaverAPI (https://api.fastsaver.io),
+// jauh lebih stabil daripada "mengintip" HTML halaman Instagram secara
+// langsung, karena Instagram sering memblokir akses dari server.
 //
-// Catatan: Instagram sewaktu-waktu bisa mengubah struktur HTML-nya, yang
-// bisa membuat ekstraksi ini berhenti berfungsi. Tidak ada cara resmi
-// (didukung Instagram) untuk mengunduh video lewat API publik.
+// Kuota gratis: 1000 credit (≈660 reel), 1.5 credit per post/reel.
+// Kalau kuota habis, perlu isi ulang / upgrade di dashboard FastSaverAPI.
 
-function extract(html, regex) {
-  const m = html.match(regex);
-  return m ? m[1] : null;
-}
+// API key FastSaverAPI — diset langsung di sini (bukan di kode client),
+// jadi tidak kelihatan lewat "view source" browser pengunjung.
+// PERHATIAN: karena repo GitHub-mu public, siapa pun yang membuka file ini
+// di GitHub tetap bisa melihat key ini. Kalau mau lebih aman, jadikan repo
+// Private, atau pindahkan ini ke Environment Variables.
+const FASTSAVER_API_KEY = 'fs_sk_5y5r7v1b7c0z9p3e8y4o8k9g0k1c';
 
-function decodeEntities(str) {
-  if (!str) return '';
-  return str
-    .replace(/\\u0026/g, '&')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&#39;/g, "'")
-    .replace(/\\\//g, '/');
-}
-
-async function fetchHtml(url) {
-  const r = await fetch(url, {
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
-      'Accept-Language': 'en-US,en;q=0.9',
-      Accept: 'text/html,application/xhtml+xml'
-    }
-  });
-  if (!r.ok) {
-    throw new Error('Gagal membuka halaman Instagram (status ' + r.status + ').');
-  }
-  return r.text();
-}
-
-function tryExtractVideo(html) {
-  return (
-    extract(html, /<meta property="og:video:secure_url" content="([^"]+)"/) ||
-    extract(html, /<meta property="og:video" content="([^"]+)"/) ||
-    extract(html, /"video_url":"([^"]+)"/) ||
-    extract(html, /"video_versions":\[\{"type":\d+,"width":\d+,"height":\d+,"url":"([^"]+)"/) ||
-    null
-  );
-}
+const FASTSAVER_ENDPOINT = 'https://api.fastsaver.io/v1/fetch';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -58,58 +24,55 @@ module.exports = async function handler(req, res) {
   }
 
   const rawUrl = req.query && req.query.url;
-  if (!rawUrl || !/instagram\.com\/(p|reel|reels|tv)\//i.test(rawUrl)) {
+  if (!rawUrl || !/instagram\.com\/(p|reel|reels|tv|stories)\//i.test(rawUrl)) {
     return res.status(400).json({ error: 'URL Instagram tidak valid.' });
   }
 
-  const cleanUrl = String(rawUrl).split('?')[0];
-
   try {
-    let html = await fetchHtml(cleanUrl);
-    let videoUrl = tryExtractVideo(html);
+    const apiUrl = `${FASTSAVER_ENDPOINT}?url=${encodeURIComponent(rawUrl)}`;
+    const r = await fetch(apiUrl, {
+      headers: { 'X-Api-Key': FASTSAVER_API_KEY }
+    });
+    const data = await r.json();
 
-    // Fallback: halaman "embed" Instagram lebih ringan dan sering tidak
-    // diblokir walau halaman post utama gagal.
-    if (!videoUrl) {
-      try {
-        const embedUrl = cleanUrl.replace(/\/?$/, '/') + 'embed/captioned/';
-        const embedHtml = await fetchHtml(embedUrl);
-        videoUrl = tryExtractVideo(embedHtml);
-        if (videoUrl) html = embedHtml; // pakai html ini juga untuk ambil title/thumbnail
-      } catch {
-        // biarkan videoUrl tetap null, akan ditangani di bawah
+    if (!r.ok || !data.ok) {
+      const detail = data && data.detail;
+      let message = 'Gagal mengambil video dari Instagram.';
+      if (detail && /private/i.test(detail)) {
+        message = 'Post ini bersifat privat, tidak bisa diunduh.';
+      } else if (r.status === 429) {
+        message = 'Terlalu banyak permintaan sekaligus, coba lagi sebentar lagi.';
+      } else if (detail) {
+        message = detail;
       }
+      return res.status(r.status === 200 ? 502 : r.status).json({ error: message });
     }
 
-    if (!videoUrl) {
-      return res.status(404).json({
-        error:
-          'Video tidak ditemukan. Kemungkinan Instagram sedang membatasi akses dari server, post bersifat privat, atau berupa carousel foto. Coba lagi dalam beberapa saat.'
+    // Carousel/album: kirim semua slide sebagai array gambar/video.
+    if (data.type === 'album' && Array.isArray(data.items)) {
+      return res.status(200).json({
+        success: true,
+        isAlbum: true,
+        items: data.items.map((it) => ({
+          type: it.type,
+          url: it.download_url,
+          thumbnail: it.thumbnail_url || ''
+        })),
+        title: data.caption || 'Slideshow Instagram'
       });
     }
 
-    const thumbnail =
-      extract(html, /<meta property="og:image" content="([^"]+)"/) || '';
-    const ogTitle =
-      extract(html, /<meta property="og:title" content="([^"]+)"/) || '';
-
-    // og:title Instagram biasanya berformat: `username on Instagram: "caption"`
-    let author = '';
-    let caption = ogTitle;
-    const match = ogTitle.match(/^(.*?)\s+on Instagram(?::\s*"?(.*?)"?)?$/i);
-    if (match) {
-      author = match[1] || '';
-      caption = match[2] || '';
-    }
-
+    // Post/reel biasa (video atau foto tunggal).
     return res.status(200).json({
       success: true,
-      videoUrl: decodeEntities(videoUrl),
-      thumbnail: decodeEntities(thumbnail),
-      title: decodeEntities(caption) || 'Video Instagram',
-      author: decodeEntities(author)
+      isAlbum: false,
+      mediaType: data.type, // 'video' atau 'image'
+      videoUrl: data.download_url,
+      thumbnail: data.thumbnail_url || '',
+      title: data.caption || 'Video Instagram',
+      duration: data.duration || null
     });
   } catch (e) {
-    return res.status(500).json({ error: e.message || 'Gagal mengambil data dari Instagram.' });
+    return res.status(500).json({ error: 'Gagal terhubung ke layanan pengunduh Instagram.' });
   }
 };
