@@ -330,7 +330,7 @@
 
     <div id="tiktokView">
       <div class="fetch-box">
-        <input id="urlInput" type="text" placeholder="https://www.tiktok.com/@user/video/..." autocomplete="off">
+        <input id="urlInput" type="text" placeholder="Tempel link TikTok atau Instagram..." autocomplete="off">
         <button class="btn" id="fetchBtn">Proses Link</button>
       </div>
       <div class="waveform" id="waveform">
@@ -453,7 +453,7 @@
       <div class="step">
         <span class="num">01</span>
         <h4>Salin tautan</h4>
-        <p>Buka TikTok, ketuk tombol Bagikan pada video yang diinginkan, lalu pilih Salin Tautan.</p>
+        <p>Buka TikTok atau Instagram, ketuk tombol Bagikan pada video/reels yang diinginkan, lalu pilih Salin Tautan.</p>
       </div>
       <div class="step">
         <span class="num">02</span>
@@ -472,7 +472,7 @@
     <b>Perlu diketahui:</b> Situs ini bergantung pada layanan pihak ketiga untuk mengambil data video, sehingga tidak selalu 100% berhasil untuk semua tautan dan bisa berhenti berfungsi jika layanan tersebut berubah. Gunakan hanya untuk mengunduh kontenmu sendiri atau video yang kamu punya izin untuk disimpan — hormati hak cipta dan kreator asli.
   </div>
 
-  <footer>© 2026 TokSave — dibuat untuk membantu mengunduh Video tiktok
+  <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi</footer>
 </div>
 
 <div class="toast-stack" id="toastStack"></div>
@@ -761,12 +761,19 @@ function showSkeleton(show){
   skeletonCard.classList.toggle('show', !!show);
 }
 
+function detectPlatform(url){
+  if(/tiktok\.com/i.test(url)) return 'tiktok';
+  if(/instagram\.com/i.test(url)) return 'instagram';
+  return null;
+}
+
 async function processLink(){
   if(fetchBtn.disabled){ return; } // masih dalam masa cooldown
   const url = urlInput.value.trim();
-  if(!url){ setStatus('Tempel tautan TikTok terlebih dahulu.', true); return; }
-  if(!/tiktok\.com/i.test(url)){ setStatus('Tautan tidak terlihat seperti URL TikTok.', true); return; }
-  await fetchTikTok(url);
+  if(!url){ setStatus('Tempel tautan TikTok atau Instagram terlebih dahulu.', true); return; }
+  const platform = detectPlatform(url);
+  if(!platform){ setStatus('Tautan harus dari TikTok atau Instagram.', true); return; }
+  await fetchMedia(url, platform);
 }
 
 // Daftar endpoint TikTok: dicoba berurutan, kalau yang pertama gagal/down,
@@ -838,7 +845,7 @@ function renderVideoStats(data){
   videoStats.style.display = parts.length ? '' : 'none';
 }
 
-async function fetchTikTok(url){
+async function fetchMedia(url, platform){
   fetchBtn.disabled = true;
   resultCard.classList.remove('show');
   showSkeleton(true);
@@ -847,18 +854,38 @@ async function fetchTikTok(url){
   let result = null;
   let lastErr = null;
 
-  for(const endpoint of TIKTOK_ENDPOINTS){
+  if(platform === 'tiktok'){
+    for(const endpoint of TIKTOK_ENDPOINTS){
+      try{
+        const res = await fetch(endpoint.build(url));
+        if(!res.ok) throw new Error('network');
+        const json = await res.json();
+        const parsed = endpoint.parse(json);
+        if(!parsed || !(parsed.play || parsed.hdplay || (parsed.images && parsed.images.length))) throw new Error('not_found');
+        result = parsed;
+        break; // berhasil, tidak perlu coba endpoint berikutnya
+      }catch(err){
+        lastErr = err;
+        // lanjut coba endpoint cadangan berikutnya
+      }
+    }
+  }else if(platform === 'instagram'){
     try{
-      const res = await fetch(endpoint.build(url));
-      if(!res.ok) throw new Error('network');
+      const res = await fetch('/api/instagram?url=' + encodeURIComponent(url));
       const json = await res.json();
-      const parsed = endpoint.parse(json);
-      if(!parsed || !(parsed.play || parsed.hdplay || (parsed.images && parsed.images.length))) throw new Error('not_found');
-      result = parsed;
-      break; // berhasil, tidak perlu coba endpoint berikutnya
+      if(!res.ok || !json.videoUrl) throw new Error(json.error || 'Video tidak ditemukan.');
+      result = {
+        play: json.videoUrl,
+        hdplay: json.videoUrl,
+        wmplay: null,
+        cover: json.thumbnail || '',
+        title: json.title || 'Video Instagram',
+        author: json.author || '',
+        music: null,
+        images: null
+      };
     }catch(err){
       lastErr = err;
-      // lanjut coba endpoint cadangan berikutnya
     }
   }
 
@@ -915,7 +942,8 @@ async function fetchTikTok(url){
     resultCard.classList.add('show');
   }catch(err){
     showSkeleton(false);
-    setStatus('Gagal mengambil video. Semua layanan pihak ketiga sedang tidak tersedia atau tautan tidak valid — coba lagi beberapa saat.', true);
+    const specific = err && err.message && platform === 'instagram' ? err.message : null;
+    setStatus(specific || 'Gagal mengambil video. Semua layanan pihak ketiga sedang tidak tersedia atau tautan tidak valid — coba lagi beberapa saat.', true);
     showToast('Gagal mengambil video.', true);
   }finally{
     fetchBtn.disabled = false;
@@ -1195,4 +1223,4 @@ drawBrat();
 </script>
 
 </body>
-  </html>
+</html>
