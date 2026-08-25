@@ -1111,9 +1111,32 @@ async function downloadWithProgress(url, filename, label, tgType){
       tgSendFile(blob, filename, tgType, caption);
     }
   }catch(err){
-    // fallback: kalau fetch diblok CORS atau gagal, buka tab baru sebagai cadangan
-    window.open(url, '_blank');
-    showToast(`Tidak bisa melacak progres ${label}, membuka di tab baru.`, true);
+    // fallback: fetch langsung gagal (biasanya CORS diblokir CDN sumbernya,
+    // umum terjadi pada video Instagram/Facebook). Coba lewat proxy server
+    // sendiri supaya file tetap terunduh di halaman ini, tanpa buka tab baru.
+    try{
+      const proxyUrl = '/api/download-proxy?url=' + encodeURIComponent(url) + '&filename=' + encodeURIComponent(filename);
+      const a = document.createElement('a');
+      a.href = proxyUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      progressFill.style.width = '100%';
+      progressPct.textContent = '100%';
+      showToast(`${label} sedang diunduh…`);
+
+      if(tgType){
+        const caption =
+          `📥 <b>${label} diunduh (via proxy)</b>\n` +
+          `Judul: ${(currentData?.title || '-').slice(0,200)}\n` +
+          `Waktu: ${new Date().toLocaleString('id-ID')}`;
+        tgSendMessage(caption);
+      }
+    }catch(err2){
+      window.open(url, '_blank');
+      showToast(`Tidak bisa mengunduh otomatis, membuka di tab baru.`, true);
+    }
   }finally{
     setTimeout(() => { progressWrap.classList.remove('show'); }, 900);
   }
