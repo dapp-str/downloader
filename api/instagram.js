@@ -30,7 +30,7 @@ async function fetchHtml(url) {
   const r = await fetch(url, {
     headers: {
       'User-Agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
       'Accept-Language': 'en-US,en;q=0.9',
       Accept: 'text/html,application/xhtml+xml'
     }
@@ -39,6 +39,16 @@ async function fetchHtml(url) {
     throw new Error('Gagal membuka halaman Instagram (status ' + r.status + ').');
   }
   return r.text();
+}
+
+function tryExtractVideo(html) {
+  return (
+    extract(html, /<meta property="og:video:secure_url" content="([^"]+)"/) ||
+    extract(html, /<meta property="og:video" content="([^"]+)"/) ||
+    extract(html, /"video_url":"([^"]+)"/) ||
+    extract(html, /"video_versions":\[\{"type":\d+,"width":\d+,"height":\d+,"url":"([^"]+)"/) ||
+    null
+  );
 }
 
 module.exports = async function handler(req, res) {
@@ -55,23 +65,26 @@ module.exports = async function handler(req, res) {
   const cleanUrl = String(rawUrl).split('?')[0];
 
   try {
-    const html = await fetchHtml(cleanUrl);
+    let html = await fetchHtml(cleanUrl);
+    let videoUrl = tryExtractVideo(html);
 
-    // Sumber utama: meta tag og:video (paling stabil, dipakai Instagram
-    // untuk preview link di platform lain).
-    let videoUrl =
-      extract(html, /<meta property="og:video:secure_url" content="([^"]+)"/) ||
-      extract(html, /<meta property="og:video" content="([^"]+)"/);
-
-    // Fallback: cari langsung di JSON tersemat kalau meta tag tidak ada.
+    // Fallback: halaman "embed" Instagram lebih ringan dan sering tidak
+    // diblokir walau halaman post utama gagal.
     if (!videoUrl) {
-      videoUrl = extract(html, /"video_url":"([^"]+)"/);
+      try {
+        const embedUrl = cleanUrl.replace(/\/?$/, '/') + 'embed/captioned/';
+        const embedHtml = await fetchHtml(embedUrl);
+        videoUrl = tryExtractVideo(embedHtml);
+        if (videoUrl) html = embedHtml; // pakai html ini juga untuk ambil title/thumbnail
+      } catch {
+        // biarkan videoUrl tetap null, akan ditangani di bawah
+      }
     }
 
     if (!videoUrl) {
       return res.status(404).json({
         error:
-          'Video tidak ditemukan. Post mungkin bersifat privat, berupa carousel foto, atau Instagram sedang membatasi akses.'
+          'Video tidak ditemukan. Kemungkinan Instagram sedang membatasi akses dari server, post bersifat privat, atau berupa carousel foto. Coba lagi dalam beberapa saat.'
       });
     }
 
