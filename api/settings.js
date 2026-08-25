@@ -20,9 +20,14 @@ const DEFAULTS = {
   heroTitleLine2: 'dalam hitungan detik.',
   heroSubtitle: 'Tempel tautan videonya. Kami ambil versi MP4 tanpa watermark dan audio MP3-nya sekaligus.',
   qrisImage: 'https://i.ibb.co.com/LXVDc8Tr/qr-ID1025444122473-29-06-26-1782730287-1782730287658.jpg',
-  donationMessage: 'Kalau situs ini bermanfaat, boleh banget traktir developer kopi lewat scan QRIS di bawah ini.'
+  donationMessage: 'Kalau situs ini bermanfaat, boleh banget traktir developer kopi lewat scan QRIS di bawah ini.',
+  announcementEnabled: 'false',
+  announcementText: ''
 };
 
+// Field boolean disimpan sebagai string 'true'/'false' karena semua nilai
+// datang dari form HTML sebagai string.
+const BOOLEAN_KEYS = new Set(['announcementEnabled']);
 const ALLOWED_KEYS = Object.keys(DEFAULTS);
 
 async function kvGet() {
@@ -81,7 +86,11 @@ module.exports = async function handler(req, res) {
     const current = (await kvGet().catch(() => null)) || {};
     const next = { ...DEFAULTS, ...current };
     for (const k of ALLOWED_KEYS) {
-      if (typeof body[k] === 'string') next[k] = body[k].trim();
+      if (typeof body[k] === 'string') {
+        next[k] = BOOLEAN_KEYS.has(k) ? (body[k] === 'true' ? 'true' : 'false') : body[k].trim();
+      } else if (typeof body[k] === 'boolean' && BOOLEAN_KEYS.has(k)) {
+        next[k] = body[k] ? 'true' : 'false';
+      }
     }
 
     try {
