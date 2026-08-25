@@ -1,11 +1,17 @@
 // /api/settings.js
 // GET  -> returns the current editable site content (public, cached briefly)
 // POST -> updates the content (requires header x-admin-password to match
-//         the ADMIN_PASSWORD environment variable set in Vercel)
+//         ADMIN_PASSWORD below)
 //
 // Storage: Vercel KV (Upstash Redis REST API). Add "Vercel KV" from the
 // Storage tab in your Vercel project — it auto-injects KV_REST_API_URL and
 // KV_REST_API_TOKEN as environment variables, no extra setup needed.
+
+// Password admin — diset langsung di sini, tidak lewat Environment Variables.
+// PERHATIAN: karena repo GitHub-mu public, siapa pun yang membuka file ini
+// di GitHub bisa melihat password ini. Kalau mau lebih aman, ubah repo
+// jadi Private di Settings repo GitHub.
+const ADMIN_PASSWORD = 'Owner1121';
 
 const KEY = 'toksave:site-settings';
 
@@ -62,10 +68,7 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'POST') {
     const password = req.headers['x-admin-password'];
-    if (!process.env.ADMIN_PASSWORD) {
-      return res.status(500).json({ error: 'ADMIN_PASSWORD belum diatur di server.' });
-    }
-    if (password !== process.env.ADMIN_PASSWORD) {
+    if (password !== ADMIN_PASSWORD) {
       return res.status(401).json({ error: 'Password admin salah.' });
     }
 
