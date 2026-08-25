@@ -105,6 +105,18 @@
       </div>
     </div>
 
+    <div class="card">
+      <label class="toggle-row" for="announcementEnabled" style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; margin-bottom:14px;">
+        <span style="font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:700;">Tampilkan pengumuman</span>
+        <input type="checkbox" id="announcementEnabled" style="width:20px; height:20px; accent-color:var(--accent); cursor:pointer;">
+      </label>
+      <div class="field">
+        <label for="announcementText">Isi pengumuman (tampil sebagai banner di atas situs)</label>
+        <textarea id="announcementText" maxlength="240" placeholder="Contoh: Server sedang gangguan, unduhan mungkin lambat sementara."></textarea>
+        <p class="hint">Kosongkan atau matikan toggle di atas untuk menyembunyikan banner.</p>
+      </div>
+    </div>
+
     <button class="btn" id="saveBtn">Simpan Perubahan</button>
     <div class="status" id="saveStatus"></div>
 
@@ -129,8 +141,10 @@ const fields = {
   heroTitleLine2: document.getElementById('titleLine2'),
   heroSubtitle: document.getElementById('subtitle'),
   qrisImage: document.getElementById('qrisImage'),
-  donationMessage: document.getElementById('donationMessage')
+  donationMessage: document.getElementById('donationMessage'),
+  announcementText: document.getElementById('announcementText')
 };
+const announcementEnabled = document.getElementById('announcementEnabled');
 
 const qrisPreview = document.getElementById('qrisPreview');
 const qrisPreviewImg = document.getElementById('qrisPreviewImg');
@@ -151,6 +165,8 @@ async function loadSettings(){
     fields.heroSubtitle.value = data.heroSubtitle || '';
     fields.qrisImage.value = data.qrisImage || '';
     fields.donationMessage.value = data.donationMessage || '';
+    fields.announcementText.value = data.announcementText || '';
+    announcementEnabled.checked = data.announcementEnabled === 'true';
     updateQrisPreview();
   }catch(e){
     setStatus(saveStatus, 'Gagal memuat data saat ini.', 'err');
@@ -210,6 +226,7 @@ saveBtn.addEventListener('click', async () => {
   try{
     const payload = {};
     for(const k in fields) payload[k] = fields[k].value;
+    payload.announcementEnabled = announcementEnabled.checked ? 'true' : 'false';
     const res = await fetch('/api/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
