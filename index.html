@@ -937,6 +937,9 @@ async function fetchMedia(url, platform){
     }
   }
 
+  try{
+    if(!result) throw lastErr || new Error('all_failed');
+
     currentData = result;
     const isSlideshow = !!(result.images && result.images.length);
     const platformLabel = platform === 'instagram' ? 'Instagram' : platform === 'youtube' ? 'YouTube' : 'TikTok';
