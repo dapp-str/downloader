@@ -106,6 +106,23 @@
     </div>
 
     <div class="card">
+      <div style="font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:700; margin-bottom:14px;">Platform aktif</div>
+      <label class="toggle-row" for="platformTiktokEnabled" style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; margin-bottom:14px;">
+        <span>TikTok</span>
+        <input type="checkbox" id="platformTiktokEnabled" style="width:20px; height:20px; accent-color:var(--accent); cursor:pointer;">
+      </label>
+      <label class="toggle-row" for="platformInstagramEnabled" style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; margin-bottom:14px;">
+        <span>Instagram</span>
+        <input type="checkbox" id="platformInstagramEnabled" style="width:20px; height:20px; accent-color:var(--accent); cursor:pointer;">
+      </label>
+      <label class="toggle-row" for="platformYoutubeEnabled" style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;">
+        <span>YouTube</span>
+        <input type="checkbox" id="platformYoutubeEnabled" style="width:20px; height:20px; accent-color:var(--accent); cursor:pointer;">
+      </label>
+      <p class="hint" style="margin-top:14px;">Matikan sementara kalau credit API-nya habis atau sedang bermasalah. Tombolnya otomatis hilang dari situs untuk pengunjung.</p>
+    </div>
+
+    <div class="card">
       <label class="toggle-row" for="announcementEnabled" style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; margin-bottom:14px;">
         <span style="font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:700;">Tampilkan pengumuman</span>
         <input type="checkbox" id="announcementEnabled" style="width:20px; height:20px; accent-color:var(--accent); cursor:pointer;">
@@ -145,6 +162,9 @@ const fields = {
   announcementText: document.getElementById('announcementText')
 };
 const announcementEnabled = document.getElementById('announcementEnabled');
+const platformTiktokEnabled = document.getElementById('platformTiktokEnabled');
+const platformInstagramEnabled = document.getElementById('platformInstagramEnabled');
+const platformYoutubeEnabled = document.getElementById('platformYoutubeEnabled');
 
 const qrisPreview = document.getElementById('qrisPreview');
 const qrisPreviewImg = document.getElementById('qrisPreviewImg');
@@ -167,6 +187,9 @@ async function loadSettings(){
     fields.donationMessage.value = data.donationMessage || '';
     fields.announcementText.value = data.announcementText || '';
     announcementEnabled.checked = data.announcementEnabled === 'true';
+    platformTiktokEnabled.checked = data.platformTiktokEnabled !== 'false';
+    platformInstagramEnabled.checked = data.platformInstagramEnabled !== 'false';
+    platformYoutubeEnabled.checked = data.platformYoutubeEnabled !== 'false';
     updateQrisPreview();
   }catch(e){
     setStatus(saveStatus, 'Gagal memuat data saat ini.', 'err');
@@ -227,6 +250,9 @@ saveBtn.addEventListener('click', async () => {
     const payload = {};
     for(const k in fields) payload[k] = fields[k].value;
     payload.announcementEnabled = announcementEnabled.checked ? 'true' : 'false';
+    payload.platformTiktokEnabled = platformTiktokEnabled.checked ? 'true' : 'false';
+    payload.platformInstagramEnabled = platformInstagramEnabled.checked ? 'true' : 'false';
+    payload.platformYoutubeEnabled = platformYoutubeEnabled.checked ? 'true' : 'false';
     const res = await fetch('/api/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
