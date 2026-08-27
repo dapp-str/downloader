@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kebijakan Privasi & Ketentuan Layanan — TokSave</title>
+<meta name="description" content="Kebijakan privasi dan ketentuan layanan TokSave: data yang dikumpulkan, layanan pihak ketiga yang digunakan, dan tanggung jawab pengguna.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://toksave-download.vercel.app/kebijakan-privasi.html">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #000814; --bg-card: #030f24; --bg-card-2: #05142e;
+    --line: #12233f; --accent: #90e0ef; --accent-deep: #48cae4;
+    --white: #ffffff; --muted: #7b93ad;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--white); font-family:'Inter',sans-serif;}
+  a{color:var(--accent); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 24px 80px;}
+
+  nav{display:flex; align-items:center; justify-content:space-between; padding:26px 0;}
+  .logo{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:19px; letter-spacing:-0.02em;}
+  .back-link{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted);}
+  .back-link:hover{color:var(--accent);}
+
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.12em; color:var(--accent); text-transform:uppercase;}
+  h1{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(26px,5vw,38px); margin:14px 0 8px; letter-spacing:-0.02em;}
+  .updated{color:var(--muted); font-size:13px; font-family:'JetBrains Mono',monospace; margin-bottom:40px;}
+
+  h2{font-family:'Space Grotesk',sans-serif; font-size:19px; margin:36px 0 12px; letter-spacing:-0.01em;}
+  p, li{color:#c4d3e3; font-size:14.5px; line-height:1.75; margin-bottom:12px;}
+  ul{padding-left:20px; margin-bottom:16px;}
+  .card{background:var(--bg-card); border:1px solid var(--line); border-radius:16px; padding:20px 22px; margin-bottom:16px;}
+  .card p:last-child{margin-bottom:0;}
+  strong{color:var(--white);}
+
+  footer{margin-top:60px; border-top:1px solid var(--line); padding-top:24px; text-align:center; color:var(--muted); font-size:12.5px; font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <span class="logo">TOKSAVE</span>
+    <a class="back-link" href="/">← Kembali ke Beranda</a>
+  </nav>
+
+  <span class="eyebrow">legal</span>
+  <h1>Kebijakan Privasi & Ketentuan Layanan</h1>
+  <p class="updated">Terakhir diperbarui: 27 Agustus 2026</p>
+
+  <h2>1. Data yang Kami Kumpulkan</h2>
+  <div class="card">
+    <p>TokSave tidak meminta pendaftaran akun, email, atau data pribadi apa pun untuk digunakan. Data teknis yang diproses secara otomatis meliputi:</p>
+    <ul>
+      <li><strong>Alamat IP</strong> — digunakan sementara untuk mencegah penyalahgunaan (rate limiting), tersimpan singkat lalu otomatis terhapus.</li>
+      <li><strong>Tautan video</strong> yang kamu tempel — dikirim ke layanan pihak ketiga (lihat bagian 2) untuk diproses, dan hasilnya bisa disimpan sementara (cache) di server kami selama beberapa menit untuk mempercepat permintaan yang sama.</li>
+    </ul>
+    <p>Kami tidak menjual, membagikan, atau menggunakan data ini untuk iklan yang menargetkan individu.</p>
+  </div>
+
+  <h2>2. Layanan Pihak Ketiga</h2>
+  <div class="card">
+    <p>Untuk mengambil video, TokSave meneruskan tautan yang kamu masukkan ke layanan pihak ketiga berikut:</p>
+    <ul>
+      <li><strong>TikTok:</strong> diproses lewat API pihak ketiga (tikwm.com).</li>
+      <li><strong>Instagram & YouTube:</strong> diproses lewat FastSaverAPI (api.fastsaver.io).</li>
+    </ul>
+    <p>Penggunaan layanan ini tunduk pada kebijakan privasi masing-masing penyedia. TokSave tidak mengontrol bagaimana mereka memproses data di sisi mereka.</p>
+  </div>
+
+  <h2>3. Cookie & Penyimpanan Lokal</h2>
+  <div class="card">
+    <p>Situs ini menggunakan <em>localStorage</em> dan <em>sessionStorage</em> di browser kamu (bukan cookie pelacak pihak ketiga) untuk:</p>
+    <ul>
+      <li>Mengatur jeda waktu (cooldown) antar permintaan unduhan.</li>
+      <li>Mengingat apakah kamu sudah menutup banner pengumuman, supaya tidak muncul berulang.</li>
+    </ul>
+    <p>Data ini tersimpan hanya di perangkatmu sendiri dan bisa dihapus kapan saja lewat pengaturan browser.</p>
+  </div>
+
+  <h2>4. Hak Cipta & Tanggung Jawab Pengguna</h2>
+  <div class="card">
+    <p>TokSave adalah alat bantu teknis untuk mengunduh video yang <strong>sudah bisa diakses secara publik</strong>. Kami tidak menghosting, menyimpan, atau mendistribusikan video apa pun di server kami.</p>
+    <p>Dengan menggunakan situs ini, kamu setuju untuk:</p>
+    <ul>
+      <li>Hanya mengunduh konten milikmu sendiri, atau konten yang kamu punya izin untuk disimpan.</li>
+      <li>Menghormati hak cipta kreator asli dan tidak menggunakan hasil unduhan untuk tujuan komersial tanpa izin.</li>
+      <li>Tidak menyalahgunakan situs ini untuk melanggar hukum yang berlaku.</li>
+    </ul>
+    <p>TokSave tidak bertanggung jawab atas cara penggunaan konten yang diunduh oleh pengguna.</p>
+  </div>
+
+  <h2>5. Ketersediaan Layanan</h2>
+  <div class="card">
+    <p>Karena bergantung pada layanan pihak ketiga, TokSave tidak menjamin ketersediaan 100% setiap saat. Fitur untuk platform tertentu bisa dinonaktifkan sementara tanpa pemberitahuan sebelumnya jika terjadi gangguan teknis.</p>
+  </div>
+
+  <h2>6. Perubahan Kebijakan</h2>
+  <div class="card">
+    <p>Kebijakan ini bisa diperbarui sewaktu-waktu. Perubahan signifikan akan tercermin lewat tanggal "Terakhir diperbarui" di atas.</p>
+  </div>
+
+  <h2>7. Kontak</h2>
+  <div class="card">
+    <p>Ada pertanyaan soal kebijakan ini atau ingin melaporkan masalah? Hubungi kami lewat menu "Dukung Developer" di halaman utama, atau kontak yang tertera pada situs.</p>
+  </div>
+
+  <footer>© 2026 TokSave — dibuat untuk kebutuhan pribadi</footer>
+</div>
+</body>
+</html>
