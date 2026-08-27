@@ -16,10 +16,32 @@ function sanitizeFilename(name) {
   return cleaned || fallback;
 }
 
+// ---------- proteksi: tolak request yang bukan dari situs sendiri ----------
+// Tanpa ini, endpoint bisa disalahgunakan orang lain sebagai "proxy download
+// gratis" buat file apa saja lewat server/bandwidth kita, bukan cuma untuk
+// video dari situs ini.
+function isAllowedOrigin(req) {
+  const host = req.headers.host;
+  const origin = req.headers.origin;
+  const referer = req.headers.referer;
+  if (!host || (!origin && !referer)) return false;
+  try {
+    if (origin && new URL(origin).host === host) return true;
+    if (referer && new URL(referer).host === host) return true;
+  } catch {
+    return false;
+  }
+  return false;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
     return res.status(405).json({ error: 'Method tidak diizinkan.' });
+  }
+
+  if (!isAllowedOrigin(req)) {
+    return res.status(403).json({ error: 'Akses ditolak. Endpoint ini hanya bisa dipanggil dari situs TokSave.' });
   }
 
   const sourceUrl = req.query && req.query.url;
