@@ -16,18 +16,26 @@ const ADMIN_PASSWORD = 'Owner1121';
 const KEY = 'toksave:site-settings';
 
 const DEFAULTS = {
-  heroTitleLine1: 'Unduh video TikTok',
+  heroTitleLine1: 'Unduh Video TikTok, IG & YouTube',
   heroTitleLine2: 'dalam hitungan detik.',
-  heroSubtitle: 'Tempel tautan videonya. Kami ambil versi MP4 tanpa watermark dan audio MP3-nya sekaligus.',
+  heroSubtitle: 'Tempel tautan TikTok, Instagram, atau YouTube. Kami ambil versi MP4 tanpa watermark dan audio MP3-nya sekaligus.',
   qrisImage: 'https://i.ibb.co.com/LXVDc8Tr/qr-ID1025444122473-29-06-26-1782730287-1782730287658.jpg',
   donationMessage: 'Kalau situs ini bermanfaat, boleh banget traktir developer kopi lewat scan QRIS di bawah ini.',
   announcementEnabled: 'false',
-  announcementText: ''
+  announcementText: '',
+  platformTiktokEnabled: 'true',
+  platformInstagramEnabled: 'true',
+  platformYoutubeEnabled: 'true'
 };
 
 // Field boolean disimpan sebagai string 'true'/'false' karena semua nilai
 // datang dari form HTML sebagai string.
-const BOOLEAN_KEYS = new Set(['announcementEnabled']);
+const BOOLEAN_KEYS = new Set([
+  'announcementEnabled',
+  'platformTiktokEnabled',
+  'platformInstagramEnabled',
+  'platformYoutubeEnabled'
+]);
 const ALLOWED_KEYS = Object.keys(DEFAULTS);
 
 async function kvGet() {
