@@ -15,7 +15,10 @@
 //    pendek (bukan 15 menit seperti Instagram) karena link unduhan YouTube
 //    dari FastSaverAPI berbentuk "tunnel" yang bisa kedaluwarsa.
 
-const FASTSAVER_API_KEY = 'fs_sk_1a9y0r5n2l4h6p9z2h6l2v5e9q6l';
+// Key default (fallback) — dipakai kalau admin belum set key override lewat
+// dashboard admin. Kalau admin sudah isi key baru di dashboard, key itu yang
+// dipakai (lihat getActiveApiKey di bawah), bukan yang di sini.
+const DEFAULT_FASTSAVER_API_KEY = 'fs_sk_1a9y0r5n2l4h6p9z2h6l2v5e9q6l';
 const FASTSAVER_YT_ENDPOINT = 'https://api.fastsaver.io/v1/youtube/download';
 
 const ALLOWED_FORMATS = new Set(['2160p', '1080p', '720p', '480p', '360p', 'mp3']);
@@ -158,6 +161,19 @@ async function getOembed(url) {
   }
 }
 
+// ---------- ambil key aktif (override admin atau default) ----------
+async function getActiveApiKey() {
+  if (!kvReady()) return DEFAULT_FASTSAVER_API_KEY;
+  try {
+    const raw = await kvCommand(['get', 'toksave:api-keys']);
+    if (!raw) return DEFAULT_FASTSAVER_API_KEY;
+    const parsed = JSON.parse(raw);
+    return (parsed && parsed.youtubeApiKey) || DEFAULT_FASTSAVER_API_KEY;
+  } catch {
+    return DEFAULT_FASTSAVER_API_KEY;
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
@@ -186,12 +202,13 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const apiKey = await getActiveApiKey();
     const [oembed, fsRes] = await Promise.all([
       getOembed(rawUrl),
       fetch(FASTSAVER_YT_ENDPOINT, {
         method: 'POST',
         headers: {
-          'X-Api-Key': FASTSAVER_API_KEY,
+          'X-Api-Key': apiKey,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ url: rawUrl, format })
