@@ -134,6 +134,24 @@
       </div>
     </div>
 
+    <div class="card">
+      <div style="font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:700; margin-bottom:6px;">API Keys FastSaverAPI</div>
+      <p class="hint" style="margin-bottom:16px;">Kosongkan kalau tidak mau ganti. Key lama tetap dipakai sampai kamu isi yang baru.</p>
+
+      <div class="field">
+        <label for="instagramApiKey">Instagram API Key</label>
+        <input type="text" id="instagramApiKey" placeholder="fs_sk_..." autocomplete="off">
+        <p class="hint" id="instagramApiKeyHint">Memuat…</p>
+      </div>
+      <div class="field">
+        <label for="youtubeApiKey">YouTube API Key</label>
+        <input type="text" id="youtubeApiKey" placeholder="fs_sk_..." autocomplete="off">
+        <p class="hint" id="youtubeApiKeyHint">Memuat…</p>
+      </div>
+      <button class="btn-ghost" id="saveApiKeysBtn" style="width:100%; padding:12px;">Simpan API Key</button>
+      <div class="status" id="apiKeysStatus"></div>
+    </div>
+
     <button class="btn" id="saveBtn">Simpan Perubahan</button>
     <div class="status" id="saveStatus"></div>
 
@@ -151,6 +169,12 @@ const unlockBtn = document.getElementById('unlockBtn');
 const gateStatus = document.getElementById('gateStatus');
 const saveBtn = document.getElementById('saveBtn');
 const saveStatus = document.getElementById('saveStatus');
+const instagramApiKey = document.getElementById('instagramApiKey');
+const youtubeApiKey = document.getElementById('youtubeApiKey');
+const instagramApiKeyHint = document.getElementById('instagramApiKeyHint');
+const youtubeApiKeyHint = document.getElementById('youtubeApiKeyHint');
+const saveApiKeysBtn = document.getElementById('saveApiKeysBtn');
+const apiKeysStatus = document.getElementById('apiKeysStatus');
 const logoutBtn = document.getElementById('logoutBtn');
 
 const fields = {
@@ -196,6 +220,54 @@ async function loadSettings(){
   }
 }
 
+async function loadApiKeyHints(){
+  try{
+    const res = await fetch('/api/api-keys', {
+      headers: { 'x-admin-password': adminPassword }
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Gagal memuat status API key.');
+    instagramApiKeyHint.textContent = 'Sekarang aktif: ' + data.instagramApiKeyMasked;
+    youtubeApiKeyHint.textContent = 'Sekarang aktif: ' + data.youtubeApiKeyMasked;
+  }catch(e){
+    instagramApiKeyHint.textContent = 'Gagal memuat status key.';
+    youtubeApiKeyHint.textContent = 'Gagal memuat status key.';
+  }
+}
+
+saveApiKeysBtn.addEventListener('click', async () => {
+  saveApiKeysBtn.disabled = true;
+  setStatus(apiKeysStatus, 'Menyimpan…');
+  try{
+    const payload = {};
+    if(instagramApiKey.value.trim()) payload.instagramApiKey = instagramApiKey.value.trim();
+    if(youtubeApiKey.value.trim()) payload.youtubeApiKey = youtubeApiKey.value.trim();
+
+    if(!payload.instagramApiKey && !payload.youtubeApiKey){
+      setStatus(apiKeysStatus, 'Isi salah satu kolom dulu sebelum menyimpan.', 'err');
+      saveApiKeysBtn.disabled = false;
+      return;
+    }
+
+    const res = await fetch('/api/api-keys', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+      body: JSON.stringify(payload)
+    });
+    const j = await res.json();
+    if(!res.ok) throw new Error(j.error || 'Gagal menyimpan API key.');
+
+    instagramApiKey.value = '';
+    youtubeApiKey.value = '';
+    setStatus(apiKeysStatus, 'Tersimpan! Key baru langsung aktif.', 'ok');
+    loadApiKeyHints();
+  }catch(e){
+    setStatus(apiKeysStatus, e.message, 'err');
+  }finally{
+    saveApiKeysBtn.disabled = false;
+  }
+});
+
 function updateQrisPreview(){
   const url = fields.qrisImage.value.trim();
   if(url){
@@ -236,6 +308,7 @@ unlockBtn.addEventListener('click', async () => {
     gate.style.display = 'none';
     dashboard.classList.add('show');
     loadSettings();
+    loadApiKeyHints();
   }catch(e){
     setStatus(gateStatus, 'Tidak bisa terhubung ke server.', 'err');
     unlockBtn.disabled = false;
