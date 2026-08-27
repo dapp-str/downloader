@@ -832,6 +832,21 @@ function buildQualityOptions(result){
   return opts;
 }
 
+// Ubah judul video jadi nama file yang aman (tanpa karakter aneh, tidak
+// kepanjangan). Kalau judul kosong/gagal, pakai fallback generik.
+function sanitizeFilename(title, fallback){
+  if(!title) return fallback;
+  const cleaned = title
+    .toLowerCase()
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '') // hapus aksen (é -> e, dst)
+    .replace(/[^a-z0-9\s-]/g, '')  // buang emoji & karakter khusus
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 60)
+    .replace(/-+$/, ''); // buang tanda "-" nyangkut di akhir kalau kepotong
+  return cleaned || fallback;
+}
+
 function formatCount(n){
   if(n === undefined || n === null) return null;
   if(n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'jt';
@@ -1076,12 +1091,13 @@ function currentQualityUrl(){
 function renderPhotoGrid(images){
   photoGrid.innerHTML = '';
   const prefix = currentPlatform === 'instagram' ? 'instagram' : 'tiktok';
+  const baseName = sanitizeFilename(currentData && currentData.title, `${prefix}-foto`);
   images.forEach((imgUrl, idx) => {
     const item = document.createElement('div');
     item.className = 'photo-item';
     item.innerHTML = `<img src="${imgUrl}" alt="Foto ${idx+1}" loading="lazy"><button class="photo-dl" title="Unduh foto ${idx+1}">⬇</button>`;
     item.querySelector('.photo-dl').addEventListener('click', () => {
-      downloadWithProgress(imgUrl, `${prefix}-foto-${idx+1}.jpg`, `Foto ${idx+1}`);
+      downloadWithProgress(imgUrl, `${baseName}-${idx+1}.jpg`, `Foto ${idx+1}`);
     });
     photoGrid.appendChild(item);
   });
@@ -1091,9 +1107,10 @@ function renderPhotoGrid(images){
 dlAllPhotos.addEventListener('click', async () => {
   if(!currentData || !currentData.images) return;
   const prefix = currentPlatform === 'instagram' ? 'instagram' : 'tiktok';
+  const baseName = sanitizeFilename(currentData.title, `${prefix}-foto`);
   dlAllPhotos.disabled = true;
   for(let i = 0; i < currentData.images.length; i++){
-    await downloadWithProgress(currentData.images[i], `${prefix}-foto-${i+1}.jpg`, `Foto ${i+1}/${currentData.images.length}`);
+    await downloadWithProgress(currentData.images[i], `${baseName}-${i+1}.jpg`, `Foto ${i+1}/${currentData.images.length}`);
   }
   dlAllPhotos.disabled = false;
   showToast('Semua foto berhasil diunduh.');
@@ -1106,12 +1123,14 @@ dlVideo.addEventListener('click', () => {
   if(!currentData) return;
   const link = currentQualityUrl();
   const prefix = currentPlatform === 'instagram' ? 'instagram' : currentPlatform === 'youtube' ? 'youtube' : 'tiktok';
-  if(link) downloadWithProgress(link, `${prefix}-video.mp4`, 'Video MP4', 'video');
+  const baseName = sanitizeFilename(currentData.title, `${prefix}-video`);
+  if(link) downloadWithProgress(link, `${baseName}.mp4`, 'Video MP4', 'video');
 });
 
 dlAudio.addEventListener('click', async () => {
   if(!currentData) return;
   const prefix = currentPlatform === 'instagram' ? 'instagram' : currentPlatform === 'youtube' ? 'youtube' : 'tiktok';
+  const baseName = sanitizeFilename(currentData.title, `${prefix}-audio`);
 
   if(currentPlatform === 'youtube'){
     dlAudio.disabled = true;
@@ -1121,7 +1140,7 @@ dlAudio.addEventListener('click', async () => {
       const json = await res.json();
       if(!res.ok || !json.success) throw new Error(json.error || 'Gagal mengambil audio.');
       setStatus('Berhasil! Pilih format unduhan di bawah.');
-      await downloadWithProgress(json.downloadUrl, `${prefix}-audio.mp3`, 'Audio MP3', 'audio');
+      await downloadWithProgress(json.downloadUrl, `${baseName}.mp3`, 'Audio MP3', 'audio');
     }catch(err){
       setStatus(err.message || 'Gagal mengambil audio.', true);
       showToast('Gagal mengunduh audio.', true);
@@ -1131,7 +1150,7 @@ dlAudio.addEventListener('click', async () => {
     return;
   }
 
-  if(currentData.music) downloadWithProgress(currentData.music, `${prefix}-audio.mp3`, 'Audio MP3', 'audio');
+  if(currentData.music) downloadWithProgress(currentData.music, `${baseName}.mp3`, 'Audio MP3', 'audio');
 });
 
 // ---------- PROGRESS BAR UNDUHAN SEBENARNYA ----------
