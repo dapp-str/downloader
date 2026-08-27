@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TokSave — Download Video TikTok Tanpa Watermark (MP4 & MP3)</title>
-<meta name="description" content="TokSave: unduh video TikTok tanpa watermark ke MP4, ekstrak audio ke MP3, dan simpan slideshow foto TikTok. Gratis, cepat, tanpa aplikasi tambahan.">
-<meta name="keywords" content="toksave, download tiktok, unduh tiktok tanpa watermark, tiktok mp3, tiktok mp4, download video tiktok">
+<title>TokSave — Download Video TikTok, Instagram & YouTube Tanpa Watermark</title>
+<meta name="description" content="TokSave: unduh video TikTok tanpa watermark, download Reels & foto Instagram, dan simpan video YouTube ke MP4/MP3. Gratis, cepat, tanpa aplikasi tambahan.">
+<meta name="keywords" content="toksave, download tiktok, unduh tiktok tanpa watermark, download instagram reels, download video youtube, youtube ke mp3, tiktok mp3, tiktok mp4, download video tiktok instagram youtube">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://toksave-download.vercel.app/">
 
@@ -26,13 +26,13 @@
 <!-- Open Graph / preview saat dibagikan & thumbnail di hasil pencarian -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TokSave">
-<meta property="og:title" content="TokSave — Download Video TikTok Tanpa Watermark">
-<meta property="og:description" content="Unduh video TikTok tanpa watermark ke MP4, ekstrak audio ke MP3, dan simpan slideshow foto TikTok secara gratis.">
+<meta property="og:title" content="TokSave — Download Video TikTok, Instagram & YouTube Tanpa Watermark">
+<meta property="og:description" content="Unduh video TikTok tanpa watermark, download Reels & foto Instagram, dan simpan video YouTube ke MP4/MP3 secara gratis.">
 <meta property="og:image" content="https://toksave-download.vercel.app/og-image.png">
 <meta property="og:url" content="https://toksave-download.vercel.app/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="TokSave — Download Video TikTok Tanpa Watermark">
-<meta name="twitter:description" content="Unduh video TikTok tanpa watermark ke MP4, ekstrak audio ke MP3, dan simpan slideshow foto TikTok secara gratis.">
+<meta name="twitter:title" content="TokSave — Download Video TikTok, Instagram & YouTube Tanpa Watermark">
+<meta name="twitter:description" content="Unduh video TikTok tanpa watermark, download Reels & foto Instagram, dan simpan video YouTube ke MP4/MP3 secara gratis.">
 <meta name="twitter:image" content="https://toksave-download.vercel.app/og-image.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,7 +45,7 @@
   "@type": "WebApplication",
   "name": "TokSave",
   "url": "https://toksave-download.vercel.app/",
-  "description": "Unduh video TikTok tanpa watermark ke MP4, ekstrak audio ke MP3, dan simpan slideshow foto TikTok.",
+  "description": "Unduh video TikTok tanpa watermark, download Reels & foto Instagram, dan simpan video YouTube ke MP4/MP3.",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Web",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "IDR" }
@@ -325,8 +325,8 @@
 
   <section class="hero" id="top">
     <span class="eyebrow">tempel · proses · simpan</span>
-    <h1 id="heroTitle">Unduh video TikTok<br><span id="heroTitleAccent">dalam hitungan detik.</span></h1>
-    <p class="sub" id="heroSubtitle">Tempel tautan videonya. Kami ambil versi MP4 tanpa watermark dan audio MP3-nya sekaligus.</p>
+    <h1 id="heroTitle">Unduh Video TikTok, IG & YouTube<br><span id="heroTitleAccent">dalam hitungan detik.</span></h1>
+    <p class="sub" id="heroSubtitle">Tempel tautan TikTok, Instagram, atau YouTube. Kami ambil versi MP4 tanpa watermark dan audio MP3-nya sekaligus.</p>
 
     <div id="tiktokView">
       <div class="fetch-box">
@@ -516,6 +516,7 @@
     const res = await fetch('/api/settings');
     if(!res.ok) return;
     const s = await res.json();
+    window.siteSettings = s;
 
     if(s.heroTitleLine1) document.getElementById('heroTitle').firstChild.textContent = s.heroTitleLine1;
     if(s.heroTitleLine2) document.getElementById('heroTitleAccent').textContent = s.heroTitleLine2;
@@ -775,6 +776,15 @@ async function processLink(){
   if(!url){ setStatus('Tempel tautan TikTok, Instagram, atau YouTube terlebih dahulu.', true); return; }
   const platform = detectPlatform(url);
   if(!platform){ setStatus('Tautan harus dari TikTok, Instagram, atau YouTube.', true); return; }
+
+  const settings = window.siteSettings || {};
+  const platformNames = { tiktok: 'TikTok', instagram: 'Instagram', youtube: 'YouTube' };
+  const enabledKey = { tiktok: 'platformTiktokEnabled', instagram: 'platformInstagramEnabled', youtube: 'platformYoutubeEnabled' }[platform];
+  if(settings[enabledKey] === 'false'){
+    setStatus(`Unduhan ${platformNames[platform]} sedang dinonaktifkan sementara. Coba platform lain atau kembali lagi nanti.`, true);
+    return;
+  }
+
   await fetchMedia(url, platform);
 }
 
@@ -1002,7 +1012,7 @@ async function fetchMedia(url, platform){
     resultCard.classList.add('show');
   }catch(err){
     showSkeleton(false);
-    const specific = err && err.message && platform === 'instagram' ? err.message : null;
+    const specific = err && err.message && (platform === 'instagram' || platform === 'youtube') ? err.message : null;
     setStatus(specific || 'Gagal mengambil video. Semua layanan pihak ketiga sedang tidak tersedia atau tautan tidak valid — coba lagi beberapa saat.', true);
     showToast('Gagal mengambil video.', true);
   }finally{
