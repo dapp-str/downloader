@@ -13,7 +13,10 @@
 //    berkali-kali (video viral yang di-share ke banyak orang), permintaan
 //    kedua dst tidak perlu memanggil FastSaverAPI lagi.
 
-const FASTSAVER_API_KEY = 'fs_sk_5y5r7v1b7c0z9p3e8y4o8k9g0k1c';
+// Key default (fallback) — dipakai kalau admin belum set key override lewat
+// dashboard admin. Kalau admin sudah isi key baru di dashboard, key itu yang
+// dipakai (lihat getActiveApiKey di bawah), bukan yang di sini.
+const DEFAULT_FASTSAVER_API_KEY = 'fs_sk_5y5r7v1b7c0z9p3e8y4o8k9g0k1c';
 const FASTSAVER_ENDPOINT = 'https://api.fastsaver.io/v1/fetch';
 
 const RATE_LIMIT_MAX = 6;           // maksimal request
@@ -146,6 +149,19 @@ async function setCached(cacheKey, value) {
   }
 }
 
+// ---------- ambil key aktif (override admin atau default) ----------
+async function getActiveApiKey() {
+  if (!kvReady()) return DEFAULT_FASTSAVER_API_KEY;
+  try {
+    const raw = await kvCommand(['get', 'toksave:api-keys']);
+    if (!raw) return DEFAULT_FASTSAVER_API_KEY;
+    const parsed = JSON.parse(raw);
+    return (parsed && parsed.instagramApiKey) || DEFAULT_FASTSAVER_API_KEY;
+  } catch {
+    return DEFAULT_FASTSAVER_API_KEY;
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
@@ -174,9 +190,10 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const apiKey = await getActiveApiKey();
     const apiUrl = `${FASTSAVER_ENDPOINT}?url=${encodeURIComponent(rawUrl)}`;
     const r = await fetch(apiUrl, {
-      headers: { 'X-Api-Key': FASTSAVER_API_KEY }
+      headers: { 'X-Api-Key': apiKey }
     });
     const data = await r.json();
 
