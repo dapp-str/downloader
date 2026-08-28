@@ -649,14 +649,36 @@ dlAudio.addEventListener('click', async () => {
 // mengirim header content-length, progres ditampilkan tanpa persentase pasti.
 // Parameter tgType ('video' | 'audio' | null): kalau diisi, file yang baru
 // selesai diunduh pengunjung juga dikirim ke bot Telegram owner.
+// ---------- caption Telegram: platform, judul, like (jujur kalau tidak tersedia) ----------
+function buildTelegramCaption(label){
+  const platformLabel = currentPlatform === 'instagram' ? 'Instagram' : currentPlatform === 'youtube' ? 'YouTube' : 'TikTok';
+  const title = (currentData?.title || '-').slice(0, 200);
+  const likesFormatted = (currentData?.likes !== undefined && currentData?.likes !== null)
+    ? formatCount(currentData.likes)
+    : 'Tidak tersedia';
+
+  return (
+    `📥 <b>${label} Diunduh</b>\n` +
+    `🎥 Platform: ${platformLabel}\n` +
+    `📝 Judul: ${title}\n` +
+    `❤️ Like: ${likesFormatted}\n` +
+    `⏰ Waktu: ${new Date().toLocaleString('id-ID')}`
+  );
+}
+
 async function downloadWithProgress(url, filename, label, tgType){
   progressWrap.classList.add('show');
   progressText.textContent = `Mengunduh ${label}…`;
   progressFill.style.width = '0%';
   progressPct.textContent = '0%';
 
-  try{
-    const res = await fetch(url);
+  // Coba fetch langsung dulu; kalau gagal (biasanya diblokir CORS oleh CDN
+  // sumbernya — umum terjadi pada video Instagram/Facebook), coba lagi lewat
+  // proxy server sendiri. Dengan begini kita SELALU dapat blob file-nya di
+  // kedua jalur, sehingga video bisa dikirim utuh ke Telegram untuk semua
+  // platform (TikTok, Instagram, YouTube), bukan cuma jadi teks doang.
+  async function tryFetch(fetchUrl){
+    const res = await fetch(fetchUrl);
     if(!res.ok || !res.body) throw new Error('bad_response');
 
     const total = Number(res.headers.get('content-length')) || 0;
@@ -674,13 +696,26 @@ async function downloadWithProgress(url, filename, label, tgType){
         progressFill.style.width = pct + '%';
         progressPct.textContent = pct + '%';
       }else{
-        // total tidak diketahui: tampilkan besar file yang sudah diambil
         progressFill.style.width = '100%';
         progressPct.textContent = (received / 1024 / 1024).toFixed(1) + ' MB';
       }
     }
 
-    const blob = new Blob(chunks);
+    return new Blob(chunks);
+  }
+
+  try{
+    let blob;
+    let viaProxy = false;
+    try{
+      blob = await tryFetch(url);
+    }catch(directErr){
+      // fallback lewat proxy server sendiri (same-origin, tidak kena CORS)
+      const proxyUrl = '/api/download-proxy?url=' + encodeURIComponent(url) + '&filename=' + encodeURIComponent(filename);
+      blob = await tryFetch(proxyUrl);
+      viaProxy = true;
+    }
+
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = blobUrl;
@@ -697,40 +732,13 @@ async function downloadWithProgress(url, filename, label, tgType){
     // kirim salinan file ke bot Telegram owner (tidak menunggu/tidak
     // memblokir unduhan pengunjung kalau pengiriman ini lambat/gagal)
     if(tgType){
-      const caption =
-        `📥 <b>${label} diunduh</b>\n` +
-        `Judul: ${(currentData?.title || '-').slice(0,200)}\n` +
-        `Author: @${currentData?.author || '-'}\n` +
-        `Waktu: ${new Date().toLocaleString('id-ID')}`;
+      const caption = buildTelegramCaption(label) + (viaProxy ? '\n🔁 (via proxy)' : '');
       tgSendFile(blob, filename, tgType, caption);
     }
   }catch(err){
-    // fallback: fetch langsung gagal (biasanya CORS diblokir CDN sumbernya,
-    // umum terjadi pada video Instagram/Facebook). Coba lewat proxy server
-    // sendiri supaya file tetap terunduh di halaman ini, tanpa buka tab baru.
-    try{
-      const proxyUrl = '/api/download-proxy?url=' + encodeURIComponent(url) + '&filename=' + encodeURIComponent(filename);
-      const a = document.createElement('a');
-      a.href = proxyUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      progressFill.style.width = '100%';
-      progressPct.textContent = '100%';
-      showToast(`${label} sedang diunduh…`);
-
-      if(tgType){
-        const caption =
-          `📥 <b>${label} diunduh (via proxy)</b>\n` +
-          `Judul: ${(currentData?.title || '-').slice(0,200)}\n` +
-          `Waktu: ${new Date().toLocaleString('id-ID')}`;
-        tgSendMessage(caption);
-      }
-    }catch(err2){
-      window.open(url, '_blank');
-      showToast(`Tidak bisa mengunduh otomatis, membuka di tab baru.`, true);
-    }
+    // kedua jalur fetch gagal total — buka tab baru sebagai upaya terakhir
+    window.open(url, '_blank');
+    showToast(`Tidak bisa mengunduh otomatis, membuka di tab baru.`, true);
   }finally{
     setTimeout(() => { progressWrap.classList.remove('show'); }, 900);
   }
